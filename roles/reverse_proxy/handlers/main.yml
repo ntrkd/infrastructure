@@ -1,0 +1,9 @@
+- name: Restart caddy
+  community.docker.docker_container:
+    name: caddy
+    restart: true
+
+- name: Restart crowdsec
+  community.docker.docker_container:
+    name: crowdsec
+    restart: true

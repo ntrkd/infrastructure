@@ -1,0 +1,4 @@
+- name: Restart gitea
+  community.docker.docker_container:
+    name: gitea
+    restart: true

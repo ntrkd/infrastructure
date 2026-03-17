@@ -1,0 +1,44 @@
+services:
+  crowdsec:
+    image: crowdsecurity/crowdsec
+    container_name: crowdsec
+    restart: unless-stopped
+    networks:
+      - crowdsec
+    environment:
+      COLLECTIONS: "crowdsecurity/http-cve crowdsecurity/caddy LePresidente/gitea Dominic-Wagner/vaultwarden"
+      GID: "${GID-1000}"
+    depends_on:
+      - 'caddy'
+    volumes:
+      - ./log/:/var/log/caddy
+      - ./crowdsec/db/:/var/lib/crowdsec/data/
+      - ./crowdsec/config/:/etc/crowdsec/
+      - {{ docker_dir }}/gitea/gitea/gitea/log/gitea.log:/var/log/gitea.log
+      - {{ docker_dir }}/vaultwarden/data/log/vaultwarden.log:/var/log/vaultwarden.log
+
+  caddy:
+    container_name: caddy
+    build:
+        context: '.'
+#        no_cache: true
+        dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - crowdsec
+      - reverse_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+#      - ./site:/srv
+      - ./data:/data
+      - ./config:/config
+      - ./log:/var/log
+
+networks:
+  crowdsec:
+  reverse_proxy:
+    external: true

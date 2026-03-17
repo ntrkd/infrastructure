@@ -1,0 +1,58 @@
+(logging) {
+        log {
+                level DEBUG
+
+                format filter {
+                        fields {
+                                request>uri query {
+                                        replace access_token REDACTED
+                                }
+                        }
+                }
+
+                output file /var/log/caddy-{args.0}.log {
+                        mode 644
+                        roll_size 40MiB
+                }
+        }
+}
+
+{
+        crowdsec {
+                api_url http://crowdsec:8080
+                api_key 98c6fa9a03542a9c50b3cbf2b295d6
+                ticker_interval 15s
+                appsec_url http://crowdsec:7422
+                # disable_streaming
+                # enable_hard_fails
+        }
+}
+
+git.ntrk.me {
+        import logging gitea
+
+        route {
+                crowdsec
+                reverse_proxy http://gitea:3000
+        }
+}
+
+vw.ntrk.me {
+        import logging vaultwarden
+
+        route {
+                crowdsec
+                reverse_proxy http://vaultwarden:80 {
+                        header_up X-Real-IP {remote_host}
+                }
+        }
+}
+
+cal.ntrk.me {
+        import logging radicale
+
+        route {
+                crowdsec
+                reverse_proxy http://radicale:5232
+        }
+}

@@ -1,0 +1,37 @@
+- name: ensure sudo is installed
+  ansible.builtin.apt:
+    pkg: sudo
+    state: present
+
+- name: "make user {{ user }}"
+  ansible.builtin.user:
+    user: "{{ user }}"
+    shell: /bin/bash
+    password: "{{ norm_user_pswd_hash }}"
+    groups: sudo
+    append: true
+
+- name: set root password
+  ansible.builtin.user:
+    user: root
+    password: "{{ root_user_pswd_hash }}"
+
+- name: Set up multiple authorized keys for ntrk
+  ansible.posix.authorized_key:
+    user: ntrk
+    state: present
+    key: '{{ item }}'
+  loop:
+    - "{{ laptop_pub_key }}"
+    - "{{ controldog_pub_key }}"
+
+- name: Get hostname using the `hostname` command
+  ansible.builtin.command: hostname
+  register: hostname_output
+  changed_when: false
+
+- name: Map hostname to 127.0.0.1
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "127.0.0.1  {{ hostname_output.stdout }}"
+    state: present

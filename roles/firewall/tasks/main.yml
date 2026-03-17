@@ -1,0 +1,81 @@
+- name: Allow SSH INPUT
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    match: tcp
+    destination_port: 22
+    jump: ACCEPT
+
+- name: Allow SSH OUTPUT
+  ansible.builtin.iptables:
+    chain: OUTPUT
+    protocol: tcp
+    source_port: 22
+    match: state
+    ctstate: ESTABLISHED
+    jump: ACCEPT
+
+# - name: Allow HTTP input
+#   ansible.builtin.iptables:
+#     chain: INPUT
+#     protocol: tcp
+#     destination_port: 80
+#     match: conntrack
+#     ctstate: NEW,ESTABLISHED
+#     jump: ACCEPT
+#
+# - name: Allow HTTP output
+#   ansible.builtin.iptables:
+#     chain: OUTPUT
+#     protocol: tcp
+#     source_port: 80
+#     match: conntrack
+#     ctstate: ESTABLISHED
+#     jump: ACCEPT
+#
+# - name: Allow HTTPS input
+#   ansible.builtin.iptables:
+#     chain: INPUT
+#     protocol: tcp
+#     destination_port: 443
+#     match: conntrack
+#     ctstate: NEW,ESTABLISHED
+#     jump: ACCEPT
+#
+# - name: Allow HTTPS output
+#   ansible.builtin.iptables:
+#     chain: OUTPUT
+#     protocol: tcp
+#     source_port: 443
+#     match: conntrack
+#     ctstate: ESTABLISHED
+#     jump: ACCEPT
+
+- name: Allow established connections
+  ansible.builtin.iptables:
+    chain: INPUT
+    match: state
+    ctstate: ESTABLISHED,RELATED
+    jump: ACCEPT
+
+- name: Set the policy for the INPUT chain to DROP
+  ansible.builtin.iptables:
+    chain: INPUT
+    policy: DROP
+
+- name: install iptables-persistent
+  ansible.builtin.apt:
+    pkg: iptables-persistent
+    state: present
+
+- name: Make /etc/iptables
+  ansible.builtin.file:
+    path: /etc/iptables/
+    owner: root
+    mode: '0740'
+
+- name: persist the iptables rules
+  community.general.iptables_state:
+    ip_version: ipv4
+    state: saved
+    path: /etc/iptables/rules.v4

@@ -1,0 +1,59 @@
+- name: ensure directory is created
+  file:
+    path: "{{ docker_dir }}/{{ role_name }}"
+    state: directory
+    owner: "1000"
+
+- name: output compose file
+  ansible.builtin.template:
+    src: compose.j2
+    dest: "{{ docker_dir }}/{{ role_name }}/compose.yml"
+    mode: "0700"
+  notify:
+    - Restart caddy
+
+- name: Make config dir
+  ansible.builtin.file:
+    path: "{{ docker_dir }}/{{ role_name }}/gitea/gitea/conf/"
+    state: directory
+    owner: "1000"
+    mode: "0700"
+
+- name: output config file
+  ansible.builtin.template:
+    src: config.j2
+    dest: "{{ docker_dir }}/{{ role_name }}/gitea/gitea/conf/app.ini"
+    mode: "0700"
+    owner: "1000"
+  notify:
+    - Restart caddy
+
+- name: Make temp working directory
+  ansible.builtin.file:
+    path: /tmp/gitea
+    state: directory
+    mode: '0750'
+
+- name: Create theme dir
+  ansible.builtin.file:
+    path: "{{ docker_dir }}/{{ role_name }}/gitea/gitea/public/assets/css/" 
+    state: directory
+    mode: '0750'
+
+- name: Download theme file
+  ansible.builtin.get_url:
+    url: https://github.com/lutinglt/gitea-github-theme/releases/latest/download/theme-github-dark.css
+    dest:  "{{ docker_dir }}/{{ role_name }}/gitea/gitea/public/assets/css/"
+    mode: '0750'
+
+- name: Start {{ role_name }}
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_dir }}/{{ role_name }}"
+
+- name: Set permissions
+  ansible.builtin.file:
+    path: "{{ docker_dir }}/{{ role_name }}/gitea"
+    owner: 1000
+    group: 1000
+    mode: 0700
+    recurse: true

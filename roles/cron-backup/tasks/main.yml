@@ -1,0 +1,21 @@
+- name: Ensure restic and sqlite3
+  ansible.builtin.apt:
+    pkg:
+      - sqlite3
+      - restic
+      - rclone
+      - unzip
+    state: present
+
+- name: Output rclone config
+  ansible.builtin.template:
+    src: rclone.j2
+    dest: "{{ ansible_env.HOME }}/.config/rclone/rclone.conf"
+    owner: "{{ ansible_env.USER }}"
+
+- name: Output backup script
+  ansible.builtin.template:
+    src: backup_script.j2
+    dest: "{{ ansible_env.HOME }}/backup.sh"
+    mode: a+x
+

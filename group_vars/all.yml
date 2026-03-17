@@ -1,0 +1,2 @@
+vault_url: "https://hcv.networky.dev"
+vault_token: "{{ lookup('file', '.vault_token') | trim }}"

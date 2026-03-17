@@ -1,0 +1,35 @@
+# - name: Run bootstrap_user if user does not exist
+#   hosts: smalldog
+#   vars:
+#     ansible_ssh_user: root
+#   tasks:
+#     - name: "Check if user {{ user }} exists"
+#       command: >
+#         ssh -q -o BatchMode=yes -o ConnectTimeout=3 {{ user }}@{{ inventory_hostname }} "echo OK"
+#       delegate_to: 127.0.0.1
+#       changed_when: false
+#       failed_when: false
+#       register: check_ansible_user
+#     
+#     - name: Bootstrap
+#       ansible.builtin.include_role:
+#         name: bootstrap_user
+#       when: check_ansible_user.rc != 0
+
+- name: Include roles
+  hosts: smalldog
+  become: yes
+  tasks:
+    - name: include roles
+      include_role:
+        name: "{{ roles_item }}"
+      loop_control:
+        loop_var: roles_item
+      loop:
+        - install_docker
+        - reverse_proxy
+        - firewall
+        - gitea
+        - vaultwarden
+        - cron-backup
+        # - radicale

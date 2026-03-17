@@ -1,0 +1,4 @@
+- name: Restart vaultwarden
+  community.docker.docker_container:
+    name: vaultwarden
+    restart: true

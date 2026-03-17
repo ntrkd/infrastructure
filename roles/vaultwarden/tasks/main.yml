@@ -1,0 +1,25 @@
+- name: ensure directory is created
+  file:
+    path: "{{ docker_dir }}/{{ role_name }}"
+    state: directory
+    owner: "1000"
+
+- name: output compose file
+  ansible.builtin.template:
+    src: compose.j2
+    dest: "{{ docker_dir }}/{{ role_name }}/compose.yml"
+    mode: "0700"
+  notify:
+    - Restart vaultwarden
+
+- name: Start {{ role_name }}
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_dir }}/{{ role_name }}"
+
+- name: Set permissions
+  ansible.builtin.file:
+    path: "{{ docker_dir }}/{{ role_name }}/data"
+    owner: 1000
+    group: 1000
+    mode: 0700
+    recurse: true

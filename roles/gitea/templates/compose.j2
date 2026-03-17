@@ -1,0 +1,23 @@
+services:
+  server:
+    image: docker.gitea.com/gitea:{{ gitea_version }}
+    container_name: gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__security__SECRET_KEY={{ lookup('hashi_vault', 'secret=ansible/data/smalldog:gitea_secret_key token={{ vault_token }} url={{ vault_url }}') }}
+      - GITEA__security__INTERNAL_TOKEN={{ lookup('hashi_vault', 'secret=ansible/data/smalldog:gitea_internal_token token={{ vault_token }} url={{ vault_url }}') }}
+    restart: unless-stopped
+    networks:
+      - gitea
+      - reverse_proxy
+    volumes:
+      - ./gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+networks:
+  reverse_proxy:
+    external: true
+  gitea:
+    external: false

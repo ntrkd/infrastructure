@@ -1,0 +1,7 @@
+[backup]
+type = sftp
+host = 49.12.135.157
+user = networky
+key_pem = {{ lookup('hashi_vault', 'secret=ansible/data/smalldog:backup_remote_key_pem token={{ vault_token }} url={{ vault_url }}') }}
+port = 53211
+shell_type = unix

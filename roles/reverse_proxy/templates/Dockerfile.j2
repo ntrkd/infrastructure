@@ -1,0 +1,14 @@
+FROM caddy:{{ caddy_version }}-builder AS builder
+
+RUN xcaddy build \
+        --with github.com/caddy-dns/cloudflare \
+        --with github.com/caddyserver/transform-encoder \
+        --with github.com/hslatman/caddy-crowdsec-bouncer \
+		--with github.com/hslatman/caddy-crowdsec-bouncer/appsec \
+		--with github.com/hslatman/caddy-crowdsec-bouncer/layer4
+
+FROM caddy:{{ caddy_version }}
+
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+
+# COPY Caddyfile ./Caddyfile

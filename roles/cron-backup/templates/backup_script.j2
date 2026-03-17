@@ -1,0 +1,45 @@
+#! /bin/bash
+
+echo Setting backup log location...
+mkdir -p /var/log/backup
+exec > >(tee "/var/log/backup/backup-$(date --iso-8601)-$(date -u +"%H%M%S").log") 2>&1
+
+echo Exporting restic env variables...
+export RESTIC_PASSWORD='{{ lookup('hashi_vault', 'secret=ansible/data/smalldog:restic_hostbrr_repo_pass token={{ vault_token }} url={{ vault_url }}') }}'
+export RESTIC_REPOSITORY='{{ cron_backup_remote_repo_path }}'
+
+echo Check if repository exists...
+restic cat config >/dev/null 2>&1
+if [[ $? -eq 1 ]]; then
+    echo Found no repository at $repo
+    echo Creating one...
+
+    restic init
+fi
+
+echo Shutting gitea down...
+docker stop gitea
+
+# echo Dumping gitea backup...
+# docker exec -w /data --user git gitea gitea dump --file gitea-backup.zip -c /data/gitea/conf/app.ini
+# mkdir -p {{ docker_dir }}/gitea/gitea/backup
+# unzip {{ docker_dir }}/gitea/gitea/gitea-backup.zip -d {{ docker_dir }}/gitea/gitea/backup/
+
+echo Dumping vaultwarden database...
+sqlite3 {{ docker_dir }}/vaultwarden/data/db.sqlite3 ".backup '{{ docker_dir }}/vaultwarden/data/db-dump.sqlite3'"
+
+echo Initiating backup with restic...
+restic --verbose backup {{ docker_dir }}/gitea/gitea \
+	{{ docker_dir }}/vaultwarden/data/attachments \
+	{{ docker_dir }}/vaultwarden/data/sends \
+	{{ docker_dir }}/vaultwarden/data/log \
+	{{ docker_dir }}/vaultwarden/data/rsa*
+
+echo Starting gitea...
+docker start gitea
+
+echo Cleaning up backup dumps...
+rm -rf {{ docker_dir }}/gitea/gitea/backup
+rm {{ docker_dir }}/gitea/gitea/gitea-backup.zip
+rm {{ docker_dir }}/vaultwarden/data/db-dump.sqlite3
+

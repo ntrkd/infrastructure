@@ -1,0 +1,4 @@
+- name: Restart radicale
+  community.docker.docker_container:
+    name: radicale
+    restart: true
