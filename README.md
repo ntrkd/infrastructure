@@ -8,6 +8,8 @@ My personal infrastructure as code and other automation files
 | HDZ VPS  | 4 vCPU                   | 6GB   | 100GB   | 10 Gbps           |
 
 # Immediate TODO
+- [ ] Restrict ansible user's sudo to certain commands
+- [ ] Implement meta/argument_specs.yml for roles
 - [ ] Change ansible playbook I've already written to the below services for the HDZ node.
 - [ ] Implement Geo IP blocking into the Caddy reverse proxy.
 - [ ] Configure backups to a cloud provider.

@@ -1,3 +1,10 @@
+- name: Ensure user password is given
+  ansible.builtin.assert:
+    that:
+      - user_pswd_hash is not none
+      - user_pswd_hash | length > 0
+    fail_msg: "You must provide 'user_pswd_hash'"
+
 - name: ensure sudo is installed
   ansible.builtin.apt:
     pkg: sudo
@@ -7,23 +14,18 @@
   ansible.builtin.user:
     user: "{{ user }}"
     shell: /bin/bash
-    password: "{{ norm_user_pswd_hash }}"
+    password: "{{ user_pswd_hash }}"
     groups: sudo
     append: true
 
-- name: set root password
-  ansible.builtin.user:
-    user: root
-    password: "{{ root_user_pswd_hash }}"
-
-- name: Set up multiple authorized keys for ntrk
-  ansible.posix.authorized_key:
-    user: ntrk
-    state: present
-    key: '{{ item }}'
-  loop:
-    - "{{ laptop_pub_key }}"
-    - "{{ controldog_pub_key }}"
+# - name: Set up multiple authorized keys for {{ user }}
+#   ansible.posix.authorized_key:
+#     user: ntrk
+#     state: present
+#     key: '{{ item }}'
+#   loop:
+#     - "{{ laptop_pub_key }}"
+#     - "{{ controldog_pub_key }}"
 
 - name: Get hostname using the `hostname` command
   ansible.builtin.command: hostname

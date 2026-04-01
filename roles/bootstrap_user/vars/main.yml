@@ -1,4 +1,0 @@
-norm_user_pswd_hash: "{{ lookup('hashi_vault', 'secret=ansible/data/smalldog:norm_user_pswd_hash token={{ vault_token }} url={{ vault_url }}') }}"
-root_user_pswd_hash: "{{ lookup('hashi_vault', 'secret=ansible/data/smalldog:root_user_pswd_hash token={{ vault_token }} url={{ vault_url }}') }}"
-laptop_pub_key: "{{ lookup('hashi_vault', 'secret=ansible/data/pub_key:laptop token={{ vault_token }} url={{ vault_url }}') }}"
-controldog_pub_key: "{{ lookup('hashi_vault', 'secret=ansible/data/pub_key:controldog token={{ vault_token }} url={{ vault_url }}') }}"
