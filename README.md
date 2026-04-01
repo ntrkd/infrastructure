@@ -8,6 +8,7 @@ My personal infrastructure as code and other automation files
 | HDZ VPS  | 4 vCPU                   | 6GB   | 100GB   | 10 Gbps           |
 
 # Immediate TODO
+- [ ] Add role to install sops and age, then install the sops plugin via ansible galaxy
 - [ ] Restrict ansible user's sudo to certain commands
 - [ ] Implement meta/argument_specs.yml for roles
 - [ ] Change ansible playbook I've already written to the below services for the HDZ node.

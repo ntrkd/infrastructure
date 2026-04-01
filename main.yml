@@ -16,9 +16,16 @@
 #         name: bootstrap_user
 #       when: check_ansible_user.rc != 0
 
+- hosts: all
+  vars_files:
+    - vars.sops.enc.yml
+
+  tasks:
+    - debug:
+        var: db_password
+
 - name: Include roles
-  hosts: smalldog
-  become: yes
+  hosts: hdz
   tasks:
     - name: include roles
       include_role:
@@ -26,10 +33,11 @@
       loop_control:
         loop_var: roles_item
       loop:
-        - install_docker
-        - reverse_proxy
-        - firewall
-        - gitea
-        - vaultwarden
-        - cron-backup
+        - bootstrap_user
+        # - install_docker
+        # - reverse_proxy
+        # - firewall
+        # - gitea
+        # - vaultwarden
+        # - cron-backup
         # - radicale
