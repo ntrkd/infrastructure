@@ -7,17 +7,30 @@
 
 - name: ensure sudo is installed
   ansible.builtin.apt:
-    pkg: sudo
+    name: sudo
     state: present
+  when: "'sudo' in groups"
 
 - name: "make user {{ user }}"
   ansible.builtin.user:
     user: "{{ user }}"
     shell: /bin/bash
     password: "{{ user_pswd_hash }}"
-    groups: sudo
-    append: true
 
+- name: Ensure groups exist
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ groups }}"
+  when: groups | length > 0
+
+- name: Ensure user is appended to groups
+  ansible.builtin.user:
+    name: "{{ user }}"
+    groups: "{{ groups }}"
+    append: true
+  when: groups | length > 0
+  
 # - name: Set up multiple authorized keys for {{ user }}
 #   ansible.posix.authorized_key:
 #     user: ntrk
@@ -26,14 +39,3 @@
 #   loop:
 #     - "{{ laptop_pub_key }}"
 #     - "{{ controldog_pub_key }}"
-
-- name: Get hostname using the `hostname` command
-  ansible.builtin.command: hostname
-  register: hostname_output
-  changed_when: false
-
-- name: Map hostname to 127.0.0.1
-  ansible.builtin.lineinfile:
-    path: /etc/hosts
-    line: "127.0.0.1  {{ hostname_output.stdout }}"
-    state: present
