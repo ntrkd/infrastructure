@@ -60,12 +60,6 @@
     name: docker
     state: present
 
-- name: "Add user to docker group"
-  ansible.builtin.user:
-    name: "{{ user }}"
-    append: true
-    groups: docker
-
 - name: Start docker on startup
   ansible.builtin.systemd_service:
     name: docker.service
