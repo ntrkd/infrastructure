@@ -2,18 +2,16 @@ argument_specs:
   main:
     short_description: Bootstrap a user
     options:
-      user:
+      bootstrap_user_name:
         type: str
         required: true
         description: name of the user to be created
-      user_pswd_hash:
+      bootstrap_user_pswd_hash:
         type: str
         required: true
         description: hashed password to set (mkpasswd -m sha-512 password)
-      user_groups:
+      bootstrap_user_groups:
         type: list
         required: false
         default: []
         description: list of groups to add the user to
-
-

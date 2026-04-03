@@ -1,12 +1,12 @@
-- name: ensure sudo is installed
+- name: Ensure sudo is installed
   ansible.builtin.apt:
     name: sudo
     state: present
-  when: "'sudo' in groups"
+  when: "'sudo' in bootstrap_user_groups"
 
-- name: "make user {{ user }}"
+- name: "Make user {{ bootstrap_user_name }}"
   ansible.builtin.user:
-    user: "{{ user }}"
+    user: "{{ bootstrap_user_name }}"
     shell: /bin/bash
     password: "{{ user_pswd_hash }}"
 
@@ -14,16 +14,16 @@
   ansible.builtin.group:
     name: "{{ item }}"
     state: present
-  loop: "{{ user_groups }}"
-  when: user_groups | length > 0
+  loop: "{{ bootstrap_user_groups }}"
+  when: boostrap_user_groups | length > 0
 
 - name: Ensure user is appended to groups
   ansible.builtin.user:
-    name: "{{ user }}"
-    groups: "{{ user_groups }}"
+    name: "{{ bootstrap_user_name }}"
+    groups: "{{ boostrap_user_groups }}"
     append: true
-  when: user_groups | length > 0
-  
+  when: bootstrap_user_groups | length > 0
+
 # - name: Set up multiple authorized keys for {{ user }}
 #   ansible.posix.authorized_key:
 #     user: ntrk

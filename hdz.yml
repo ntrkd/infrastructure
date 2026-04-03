@@ -29,9 +29,9 @@
 
     - name: Create the automation user
       vars:
-        user: "{{ automation_user }}"
-        user_pswd_hash: "{{ sops.auth.automation_user_pswd_hash }}"
-        user_groups: "{{ automation_groups }}"
+        bootstrap_user_name: "{{ automation_user }}"
+        bootstrap_user_pswd_hash: "{{ sops.auth.automation_user_pswd_hash }}"
+        bootstrap_user_groups: "{{ automation_groups }}"
       ansible.builtin.include_role:
         name: bootstrap_user
         tasks_from: main
