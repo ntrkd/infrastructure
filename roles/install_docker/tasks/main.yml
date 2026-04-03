@@ -1,4 +1,4 @@
-- name: uninstall conflicting
+- name: Uninstall conflicting
   ansible.builtin.apt:
     state: absent
     pkg:
@@ -8,11 +8,11 @@
       - docker-compose
       - containerd
       - runc
-    
-- name: apt update cache and install packages
+
+- name: Apt update cache and install packages
   ansible.builtin.apt:
     update_cache: true
-    state: latest
+    state: present
     pkg:
       - ca-certificates
       - curl
@@ -29,47 +29,49 @@
     dest: /etc/apt/keyrings/docker.asc
     mode: a+r
 
-- name: get architecture
-  set_fact:
-    arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}"
+- name: Get architecture
+  ansible.builtin.set_fact:
+    install_docker_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}"
 
-- name: put line in docker.list file
+- name: Put line in docker.list file
   ansible.builtin.lineinfile:
     create: true
-    mode: 0644
-    line: "deb [arch={{ arch }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+    mode: "0644"
+    line: >-
+      deb [arch={{ install_docker_arch }} signed-by=/etc/apt/keyrings/docker.asc]
+      https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable
     path: /etc/apt/sources.list.d/docker.list
 
-- name: install docker
+- name: Install docker
   ansible.builtin.apt:
-    state: latest
-    update_cache: yes
+    state: present
+    update_cache: true
     pkg:
-     - docker-ce
-     - docker-ce-cli
-     - containerd.io
-     - docker-buildx-plugin
-     - docker-compose-plugin
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
 
 # POST INSTALL
 
-- name: make docker group
+- name: Make docker group
   ansible.builtin.group:
     name: docker
     state: present
 
-- name: add user {{ user }} to docker group
+- name: "Add user to docker group"
   ansible.builtin.user:
     name: "{{ user }}"
     append: true
     groups: docker
 
-- name: start docker on startup
+- name: Start docker on startup
   ansible.builtin.systemd_service:
     name: docker.service
     enabled: true
 
-- name: start containerd on startup
+- name: Start containerd on startup
   ansible.builtin.systemd_service:
     name: containerd.service
     enabled: true
