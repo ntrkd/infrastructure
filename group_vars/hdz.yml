@@ -1,0 +1,4 @@
+automation_user: ansible
+automation_groups: ["ansible", "docker", "sudo"]
+docker_dir: /etc/docker
+domain: ntrk.dev

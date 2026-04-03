@@ -10,34 +10,28 @@
 #       changed_when: false
 #       failed_when: false
 #       register: check_ansible_user
-#     
+#
 #     - name: Bootstrap
 #       ansible.builtin.include_role:
 #         name: bootstrap_user
 #       when: check_ansible_user.rc != 0
 
-- hosts: all
-  vars_files:
-    - vars.sops.enc.yml
-
-  tasks:
-    - debug:
-        var: db_password
-
 - name: Include roles
   hosts: hdz
+  vars_files:
+    - group_vars/hdz.yml
+
   tasks:
-    - name: include roles
-      include_role:
-        name: "{{ roles_item }}"
-      loop_control:
-        loop_var: roles_item
-      loop:
-        - bootstrap_user
-        # - install_docker
-        # - reverse_proxy
-        # - firewall
-        # - gitea
-        # - vaultwarden
-        # - cron-backup
-        # - radicale
+    - name: Include SOPS secrets
+      community.sops.load_vars:
+        file: secrets.sops.enc.yml
+        name: sops
+
+    - name: Create the automation user
+      vars:
+        user: "{{ automation_user }}"
+        user_pswd_hash: "{{ sops.auth.automation_user_pswd_hash }}"
+        user_groups: "{{ automation_groups }}"
+      ansible.builtin.include_role:
+        name: bootstrap_user
+        tasks_from: main

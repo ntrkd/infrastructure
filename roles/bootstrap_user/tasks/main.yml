@@ -1,10 +1,3 @@
-- name: Ensure user password is given
-  ansible.builtin.assert:
-    that:
-      - user_pswd_hash is not none
-      - user_pswd_hash | length > 0
-    fail_msg: "You must provide 'user_pswd_hash'"
-
 - name: ensure sudo is installed
   ansible.builtin.apt:
     name: sudo
@@ -21,15 +14,15 @@
   ansible.builtin.group:
     name: "{{ item }}"
     state: present
-  loop: "{{ groups }}"
-  when: groups | length > 0
+  loop: "{{ user_groups }}"
+  when: user_groups | length > 0
 
 - name: Ensure user is appended to groups
   ansible.builtin.user:
     name: "{{ user }}"
-    groups: "{{ groups }}"
+    groups: "{{ user_groups }}"
     append: true
-  when: groups | length > 0
+  when: user_groups | length > 0
   
 # - name: Set up multiple authorized keys for {{ user }}
 #   ansible.posix.authorized_key:

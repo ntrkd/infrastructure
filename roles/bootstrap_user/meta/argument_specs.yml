@@ -10,7 +10,7 @@ argument_specs:
         type: str
         required: true
         description: hashed password to set (mkpasswd -m sha-512 password)
-      groups:
+      user_groups:
         type: list
         required: false
         default: []
