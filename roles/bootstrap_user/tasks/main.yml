@@ -8,19 +8,19 @@
   ansible.builtin.user:
     user: "{{ bootstrap_user_name }}"
     shell: /bin/bash
-    password: "{{ user_pswd_hash }}"
+    password: "{{ bootstrap_user_pswd_hash }}"
 
 - name: Ensure groups exist
   ansible.builtin.group:
     name: "{{ item }}"
     state: present
   loop: "{{ bootstrap_user_groups }}"
-  when: boostrap_user_groups | length > 0
+  when: bootstrap_user_groups | length > 0
 
 - name: Ensure user is appended to groups
   ansible.builtin.user:
     name: "{{ bootstrap_user_name }}"
-    groups: "{{ boostrap_user_groups }}"
+    groups: "{{ bootstrap_user_groups }}"
     append: true
   when: bootstrap_user_groups | length > 0
 
