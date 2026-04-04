@@ -1,0 +1,11 @@
+argument_specs:
+  main:
+    options:
+      reverse_proxy_caddy_bouncer_key:
+        type: str
+        required: true
+        description: bouncer API key to set for crowdsec <-> caddy interaction
+      docker_dir:
+        type: str
+        required: true
+        description: path to the docker container directory

@@ -1,60 +1,66 @@
-- name: ensure directory is created
-  file:
+- name: Ensure directory is created
+  ansible.builtin.file:
     path: "{{ docker_dir }}/{{ role_name }}"
     state: directory
-    owner: "{{ user }}"
+    mode: "0740"
 
-- name: output Caddyfile
+- name: Output Caddyfile
   ansible.builtin.template:
     src: Caddyfile.j2
     dest: "{{ docker_dir }}/{{ role_name }}/Caddyfile"
+    mode: "0740"
 
-- name: output compose file
+- name: Output compose file
   ansible.builtin.template:
     src: compose.j2
     dest: "{{ docker_dir }}/{{ role_name }}/compose.yml"
+    mode: "0740"
 
-- name: output Dockerfile
+- name: Output Dockerfile
   ansible.builtin.template:
     src: Dockerfile.j2
     dest: "{{ docker_dir }}/{{ role_name }}/Dockerfile"
+    mode: "0740"
 
 - name: Make directory for acquis template
   ansible.builtin.file:
     path: "{{ docker_dir }}/{{ role_name }}/crowdsec/config/acquis.d/"
     state: directory
-    mode: "0744"
-    
+    mode: "0740"
+
 - name: Output acquis.d file for caddy bouncer
   ansible.builtin.template:
     src: caddy_acquis.j2
     dest: "{{ docker_dir }}/{{ role_name }}/crowdsec/config/acquis.d/caddy.yaml"
+    mode: "0740"
 
 - name: Output acquis.d file for gitea collection
   ansible.builtin.template:
     src: gitea_acquis.j2
     dest: "{{ docker_dir }}/{{ role_name }}/crowdsec/config/acquis.d/gitea.yaml"
+    mode: "0740"
 
 - name: Output acquis.d file for vaultwarden collection
   ansible.builtin.template:
     src: vaultwarden_acquis.j2
     dest: "{{ docker_dir }}/{{ role_name }}/crowdsec/config/acquis.d/vaultwarden.yaml"
+    mode: "0740"
 
-- name: Create reverse_proxy network 
+- name: Create reverse_proxy network
   community.docker.docker_network:
     name: reverse_proxy
 
-- name: Start {{ role_name }}
+- name: Start docker container
   community.docker.docker_compose_v2:
     project_src: "{{ docker_dir }}/{{ role_name }}"
 
 - name: Make bouncer api key in crowdsec
   community.docker.docker_container_exec:
     container: crowdsec
-    command: cscli bouncer add caddy --key {{ lookup('hashi_vault', 'secret=ansible/data/smalldog:crowdsec_caddy_bouncer_api token={{ vault_token }} url={{ vault_url }}') }}
-  register: bouncer_resp
-  failed_when: "bouncer_resp.rc != 0 and 'already exists' not in bouncer_resp.stderr"
-  changed_when: "'already exists' not in bouncer_resp.stderr"
+    command: cscli bouncer add caddy --key {{ reverse_proxy_caddy_bouncer_key }}
+  register: reverse_proxy_bouncer_resp
+  failed_when: "reverse_proxy_bouncer_resp.rc != 0 and 'already exists' not in reverse_proxy_bouncer_resp.stderr"
+  changed_when: "'already exists' not in reverse_proxy_bouncer_resp.stderr"
   notify:
     - Restart caddy
     - Restart crowdsec
