@@ -8,13 +8,11 @@ My personal infrastructure as code and other automation files
 | HDZ VPS  | 4 vCPU                   | 6GB   | 100GB   | 10 Gbps           |
 
 # Immediate TODO
-- [ ] Add role to install sops and age, then install the sops plugin via ansible galaxy
+- [ ] Check how file permissions should be, reverse_proxy role currently just sets 0740, but who owns it? what group should own it? etc..
 - [ ] Restrict ansible user's sudo to certain commands
-- [ ] Implement meta/argument_specs.yml for roles
-- [ ] Change ansible playbook I've already written to the below services for the HDZ node.
+
 - [ ] Implement Geo IP blocking into the Caddy reverse proxy.
 - [ ] Configure backups to a cloud provider.
-- [ ] Write a bash script that generates and/or pushes them into a HashiCorp Vault instance from/to a config file which will contain all the secrets needed to access HDZ node.
 
 # Goals
 ## Backups
