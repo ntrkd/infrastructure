@@ -1,4 +1,4 @@
 ansible_become_pass: "{{ lookup('hashi_vault', 'secret=ansible/data/smalldog:norm_user_pswd token={{ vault_token }} url={{ vault_url }}') }}"
 user: ntrk
 docker_dir: /etc/docker
-domain: ntrk.me
+domain: ntrk.dev
