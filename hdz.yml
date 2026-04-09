@@ -24,3 +24,10 @@
       ansible.builtin.include_role:
         name: install_docker
         tasks_from: main
+
+    - name: Deploy reverse proxy
+      vars:
+        reverse_proxy_caddy_bouncer_key: "{{ sops.rproxy.caddy_cs_bouncer_token }}"
+      ansible.builtin.include_role:
+        name: reverse_proxy
+        tasks_from: main
