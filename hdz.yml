@@ -31,3 +31,8 @@
       ansible.builtin.include_role:
         name: reverse_proxy
         tasks_from: main
+
+    - name: Deploy Vaultwarden
+      ansible.builtin.include_role:
+        name: vaultwarden
+        tasks_from: main
