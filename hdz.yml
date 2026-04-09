@@ -20,6 +20,11 @@
         name: bootstrap_user
         tasks_from: main
 
+    - name: Configure iptables firewall
+      ansible.builtin.include_role:
+        name: firewall
+        tasks_from: main
+
     - name: Install docker
       ansible.builtin.include_role:
         name: install_docker
