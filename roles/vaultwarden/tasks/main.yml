@@ -1,10 +1,10 @@
-- name: ensure directory is created
-  file:
+- name: Ensure directory is created
+  ansible.builtin.file:
     path: "{{ docker_dir }}/{{ role_name }}"
     state: directory
-    owner: "1000"
+    mode: "0700"
 
-- name: output compose file
+- name: Output compose file
   ansible.builtin.template:
     src: compose.j2
     dest: "{{ docker_dir }}/{{ role_name }}/compose.yml"
@@ -21,5 +21,5 @@
     path: "{{ docker_dir }}/{{ role_name }}/data"
     owner: 1000
     group: 1000
-    mode: 0700
+    mode: "0700"
     recurse: true
