@@ -9,3 +9,7 @@ argument_specs:
         type: str
         required: true
         description: path to the docker container directory
+      domain:
+        type: str
+        required: true
+        description: the FQDN domain name (example.com)
