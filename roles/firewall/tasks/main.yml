@@ -59,6 +59,18 @@
     ctstate: ESTABLISHED,RELATED
     jump: ACCEPT
 
+- name: Allow INPUT on loopback
+  ansible.builtin.iptables:
+    chain: INPUT
+    in_interface: lo
+    jump: ACCEPT
+
+- name: Allow OUTPUT on loopback
+  ansible.builtin.iptables:
+    chain: OUTPUT
+    out_interface: lo
+    jump: ACCEPT
+
 - name: Set the policy for the INPUT chain to DROP
   ansible.builtin.iptables:
     chain: INPUT
