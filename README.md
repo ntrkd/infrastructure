@@ -8,7 +8,7 @@ My personal infrastructure as code and other automation files
 | HDZ VPS  | 4 vCPU                   | 6GB   | 100GB   | 10 Gbps           |
 
 # Immediate TODO
-- [ ] Check how file permissions should be, reverse_proxy role currently just sets 0740, but who owns it? what group should own it? etc..
+- [ ] Check how file permissions should be, caddy_reverse_proxy role currently just sets 0740, but who owns it? what group should own it? etc..
 - [ ] Restrict ansible user's sudo to certain commands
 
 - [ ] Implement Geo IP blocking into the Caddy reverse proxy.

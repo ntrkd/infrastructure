@@ -32,9 +32,9 @@
 
     - name: Deploy reverse proxy
       vars:
-        reverse_proxy_caddy_bouncer_key: "{{ sops.rproxy.caddy_cs_bouncer_token }}"
+        caddy_reverse_proxy_bouncer_key: "{{ sops.rproxy.caddy_cs_bouncer_token }}"
       ansible.builtin.include_role:
-        name: reverse_proxy
+        name: caddy_reverse_proxy
         tasks_from: main
 
     - name: Deploy Vaultwarden

@@ -20,7 +20,7 @@
 {
         crowdsec {
                 api_url http://crowdsec:8080
-                api_key {{ reverse_proxy_caddy_bouncer_key }}
+                api_key {{ caddy_reverse_proxy_bouncer_key }}
                 ticker_interval 15s
                 appsec_url http://crowdsec:7422
                 # disable_streaming

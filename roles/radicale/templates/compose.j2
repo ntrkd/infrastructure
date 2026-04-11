@@ -3,7 +3,7 @@ services:
     image: tomsquest/docker-radicale:{{ radicale_version }}
     container_name: radicale
     networks:
-      - reverse_proxy
+      - caddy_reverse_proxy
     user: 1000:1000
     init: true
     read_only: true
@@ -31,5 +31,5 @@ services:
       - ./config:/config:ro
 
 networks:
-  reverse_proxy:
+  caddy_reverse_proxy:
     external: true

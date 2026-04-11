@@ -1,4 +1,4 @@
-FROM caddy:{{ reverse_proxy_caddy_version }}-builder AS builder
+FROM caddy:{{ caddy_reverse_proxy_version }}-builder AS builder
 
 RUN xcaddy build \
         --with github.com/caddy-dns/cloudflare \
@@ -7,7 +7,7 @@ RUN xcaddy build \
 		--with github.com/hslatman/caddy-crowdsec-bouncer/appsec \
 		--with github.com/hslatman/caddy-crowdsec-bouncer/layer4
 
-FROM caddy:{{ reverse_proxy_caddy_version }}
+FROM caddy:{{ caddy_reverse_proxy_version }}
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 

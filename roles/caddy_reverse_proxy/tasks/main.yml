@@ -46,9 +46,9 @@
     dest: "{{ docker_dir }}/{{ role_name }}/crowdsec/config/acquis.d/vaultwarden.yaml"
     mode: "0740"
 
-- name: Create reverse_proxy network
+- name: Create caddy_reverse_proxy network
   community.docker.docker_network:
-    name: reverse_proxy
+    name: caddy_reverse_proxy
 
 - name: Start docker container
   community.docker.docker_compose_v2:
@@ -57,10 +57,10 @@
 - name: Make bouncer api key in crowdsec
   community.docker.docker_container_exec:
     container: crowdsec
-    command: cscli bouncer add caddy --key {{ reverse_proxy_caddy_bouncer_key }}
-  register: reverse_proxy_bouncer_resp
-  failed_when: "reverse_proxy_bouncer_resp.rc != 0 and 'already exists' not in reverse_proxy_bouncer_resp.stderr"
-  changed_when: "'already exists' not in reverse_proxy_bouncer_resp.stderr"
+    command: cscli bouncer add caddy --key {{ caddy_reverse_proxy_bouncer_key }}
+  register: caddy_reverse_proxy_bouncer_resp
+  failed_when: "caddy_reverse_proxy_bouncer_resp.rc != 0 and 'already exists' not in caddy_reverse_proxy_bouncer_resp.stderr"
+  changed_when: "'already exists' not in caddy_reverse_proxy_bouncer_resp.stderr"
   notify:
     - Restart caddy
     - Restart crowdsec

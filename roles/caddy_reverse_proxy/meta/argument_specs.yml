@@ -1,7 +1,7 @@
 argument_specs:
   main:
     options:
-      reverse_proxy_caddy_bouncer_key:
+      caddy_reverse_proxy_bouncer_key:
         type: str
         required: true
         description: bouncer API key to set for crowdsec <-> caddy interaction
