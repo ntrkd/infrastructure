@@ -10,9 +10,21 @@
     src: Dockerfile.j2
     dest: "{{ docker_dir }}/{{ role_name }}/Dockerfile"
     mode: "0740"
+  notify:
+    - Restart nginx
 
 - name: Output nginx.conf
   ansible.builtin.template:
     src: nginx-config.j2
     dest: "{{ docker_dir }}/{{ role_name }}/nginx.conf"
     mode: "0740"
+  notify:
+    - Restart nginx
+
+- name: Output compose.yml
+  ansible.builtin.template:
+    src: compose.j2
+    dest: "{{ docker_dir }}/{{ role_name }}/compose.yml"
+    mode: "0740"
+  notify:
+    - Restart nginx

@@ -1,2 +1,5 @@
 ---
-# handlers file for nginx_reverse_proxy
+- name: Restart nginx
+  community.docker.docker_container:
+    name: nginx
+    restart: true

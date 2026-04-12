@@ -1,0 +1,17 @@
+services:
+  nginx:
+    build: .
+    container_name: nginx
+    networks:
+      - reverse_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "1667:1667"
+    volumes:
+      - /etc/docker/soju/sock:/run/soju
+      - ./letsencrypt:/etc/letsencrypt
+
+networks:
+  reverse_proxy:
+    external: true
