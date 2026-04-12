@@ -11,7 +11,15 @@
     dest: "{{ docker_dir }}/{{ role_name }}/Dockerfile"
     mode: "0740"
   notify:
-    - Restart nginx
+    - Rebuild nginx image
+
+- name: Output entrypoint.sh
+  ansible.builtin.template:
+    src: entrypoint.j2
+    dest: "{{ docker_dir }}/{{ role_name }}/entrypoint.sh"
+    mode: "0740"
+  notify:
+    - Rebuild nginx image
 
 - name: Output nginx.conf
   ansible.builtin.template:
@@ -19,7 +27,7 @@
     dest: "{{ docker_dir }}/{{ role_name }}/nginx.conf"
     mode: "0740"
   notify:
-    - Restart nginx
+    - Rebuild nginx image
 
 - name: Output compose.yml
   ansible.builtin.template:

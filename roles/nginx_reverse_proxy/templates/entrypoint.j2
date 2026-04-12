@@ -1,0 +1,34 @@
+#!/bin/sh
+set -e
+
+DOMAIN=irc.{{ domain }},vw.ntrk.dev
+EMAIL=admin@{{ domain }}
+
+echo "Running certbot to grab certs if needed..."
+certbot certonly --standalone --non-interactive --agree-tos \
+  -d "${DOMAIN}" \
+  --email "${EMAIL}" \
+
+
+# Generate dhparams.pem if needed. certbot certonly does not generate this.
+DHPARAM_FILE="/etc/letsencrypt/ssl-dhparams.pem"
+generate_dhparams() {
+  openssl dhparam -out "$DHPARAM_FILE" 2048
+}
+
+# Check if file exists
+if [[ ! -f "$DHPARAM_FILE" ]]; then
+  echo "File not found: $DHPARAM_FILE"
+  generate_dhparams
+else
+  # Validate the file
+  if openssl dhparam -in "$DHPARAM_FILE" -check -noout > /dev/null 2>&1; then
+    echo "DH params file is valid."
+  else
+    echo "Invalid DH params file."
+    generate_dhparams
+  fi
+fi
+
+echo "Starting nginx..."
+exec nginx -g "daemon off;"
