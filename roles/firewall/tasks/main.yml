@@ -65,6 +65,18 @@
     in_interface: lo
     jump: ACCEPT
 
+- name: Allow FORWARD established/related
+  ansible.builtin.iptables:
+    chain: FORWARD
+    match: state
+    ctstate: ESTABLISHED,RELATED
+    jump: ACCEPT
+
+- name: Allow all outbound OUTPUT
+  ansible.builtin.iptables:
+    chain: OUTPUT
+    jump: ACCEPT
+
 - name: Allow OUTPUT on loopback
   ansible.builtin.iptables:
     chain: OUTPUT
