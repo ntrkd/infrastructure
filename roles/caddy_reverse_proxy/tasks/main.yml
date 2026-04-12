@@ -9,18 +9,26 @@
     src: Caddyfile.j2
     dest: "{{ docker_dir }}/{{ role_name }}/Caddyfile"
     mode: "0740"
+  notify:
+    - Restart caddy
 
 - name: Output compose file
   ansible.builtin.template:
     src: compose.j2
     dest: "{{ docker_dir }}/{{ role_name }}/compose.yml"
     mode: "0740"
+  notify:
+    - Restart caddy
+    - Restart crowdsec
 
 - name: Output Dockerfile
   ansible.builtin.template:
     src: Dockerfile.j2
     dest: "{{ docker_dir }}/{{ role_name }}/Dockerfile"
     mode: "0740"
+  notify:
+    - Restart caddy
+    - Restart crowdsec
 
 - name: Make directory for acquis template
   ansible.builtin.file:
