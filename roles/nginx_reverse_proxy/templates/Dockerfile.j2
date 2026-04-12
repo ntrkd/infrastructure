@@ -1,0 +1,40 @@
+FROM alpine:{{ nginx_reverse_proxy_alpine_version }}
+
+# Install the nginx package
+RUN set -eux; \
+    # set apk repo https://nginx.org/en/linux_packages.html#Alpine
+    printf "%s%s%s%s\n" \
+        "@nginx " \
+        "https://nginx.org/packages/alpine/v" \
+        $(egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release) \
+        "/main" \
+        | tee -a /etc/apk/repositories; \
+    \
+    # -q quiet, -O output
+    wget -qO /etc/apk/keys/nginx_signing.rsa.pub https://nginx.org/keys/nginx_signing.rsa.pub; \
+    \
+    # compute the sum of the current nginx pub key then put it in the echo command below
+    # curl -fsSL https://nginx.org/keys/nginx_signing.rsa.pub | sha256sum
+    echo "ff7cf138acc09f2a5029300ab713fe6a1440605fca72e2bab76a4da9206fec87 /etc/apk/keys/nginx_signing.rsa.pub" | sha256sum -c -; \
+    # add the repository, don't cache index files
+    apk add --no-cache nginx@nginx openssl
+
+# Install certbot into a venv
+RUN set -ex; \
+    apk add --no-cache python3 python3-dev py3-virtualenv augeas gcc && \
+    python3 -m venv /opt/certbot/ && \
+    /opt/certbot/bin/pip install --upgrade pip && \
+    /opt/certbot/bin/pip install certbot certbot-nginx && \
+    # hardlink to path
+    ln -s /opt/certbot/bin/certbot /usr/local/bin/certbot
+
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# TODO: cheese non-root by using 8080 and 8443
+EXPOSE 80 443
+
+# Run nginx in foreground
+# CMD ["nginx", "-g", "daemon off;"]
+CMD ["./entrypoint.sh"]

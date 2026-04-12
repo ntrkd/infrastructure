@@ -1,0 +1,18 @@
+---
+- name: Ensure directory is created
+  ansible.builtin.file:
+    path: "{{ docker_dir }}/{{ role_name }}"
+    state: directory
+    mode: "0740"
+
+- name: Output Dockerfile
+  ansible.builtin.template:
+    src: Dockerfile.j2
+    dest: "{{ docker_dir }}/{{ role_name }}/Dockerfile"
+    mode: "0740"
+
+- name: Output nginx.conf
+  ansible.builtin.template:
+    src: nginx-config.j2
+    dest: "{{ docker_dir }}/{{ role_name }}/nginx.conf"
+    mode: "0740"
