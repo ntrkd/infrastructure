@@ -8,10 +8,11 @@ My personal infrastructure as code and other automation files
 | HDZ VPS  | 4 vCPU                   | 6GB   | 100GB   | 10 Gbps           |
 
 # Immediate TODO
+- [ ] Add the ability to dump config directly into the soju database
+- [ ] Let container roles (vaultwarden, soju) add their own config to the nginx role somehow
 - [ ] Check how file permissions should be, caddy_reverse_proxy role currently just sets 0740, but who owns it? what group should own it? etc..
 - [ ] Restrict ansible user's sudo to certain commands
-
-- [ ] Implement Geo IP blocking into the Caddy reverse proxy.
+- [ ] Implement Geo IP blocking into the reverse proxy.
 - [ ] Configure backups to a cloud provider.
 
 # Goals
