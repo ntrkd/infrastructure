@@ -1,0 +1,22 @@
+services:
+  soju:
+    build: .
+    container_name: soju
+    restart: unless-stopped
+    environment:
+      TZ: "ET"
+    networks:
+      - reverse_proxy
+    volumes:
+      - ./sock:/run/soju
+      - ./soju-config:/etc/soju/config
+      - ./data:/var/lib/soju
+    healthcheck:
+      test: ["CMD", "sojuctl", "help"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  reverse_proxy:
+    external: true

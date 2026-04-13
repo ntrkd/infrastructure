@@ -1,0 +1,13 @@
+---
+- name: Restart soju
+  community.docker.docker_container:
+    name: soju
+    restart: true
+
+- name: Rebuild soju image
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_dir }}/{{ role_name }}"
+    state: present # docker compose up -d
+    build: always # docker compose build
+    files: compose.yml

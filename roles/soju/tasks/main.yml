@@ -1,0 +1,48 @@
+---
+- name: Ensure directory is created
+  ansible.builtin.file:
+    path: "{{ docker_dir }}/{{ role_name }}"
+    state: directory
+    mode: "0740"
+
+- name: Ensure data directory is created
+  ansible.builtin.file:
+    path: "{{ docker_dir }}/{{ role_name }}/data"
+    state: directory
+    mode: "0740"
+
+- name: Ensure socket directory is created
+  ansible.builtin.file:
+    path: "{{ docker_dir }}/{{ role_name }}/sock"
+    state: directory
+    mode: "0740"
+
+- name: Ensure admin socket is created
+  ansible.builtin.file:
+    path: "{{ docker_dir }}/{{ role_name }}/sock/soju-admin.sock"
+    state: touch
+    mode: "0740"
+
+- name: Output Dockerfile
+  ansible.builtin.template:
+    src: Dockerfile.j2
+    dest: "{{ docker_dir }}/{{ role_name }}/Dockerfile"
+    mode: "0740"
+  notify:
+    - Rebuild soju image
+
+- name: Output compose.yml
+  ansible.builtin.template:
+    src: compose.j2
+    dest: "{{ docker_dir }}/{{ role_name }}/compose.yml"
+    mode: "0740"
+  notify:
+    - Restart soju
+
+- name: Output soju config file
+  ansible.builtin.template:
+    src: soju-config.j2
+    dest: "{{ docker_dir }}/{{ role_name }}/soju-config"
+    mode: "0740"
+  notify:
+    - Restart soju

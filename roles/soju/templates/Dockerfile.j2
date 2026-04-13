@@ -1,0 +1,21 @@
+FROM golang:{{ soju_golang_version }}-alpine{{ soju_alpine_version }} as build
+
+ENV SOJU_VERSION=master
+
+RUN apk update && apk upgrade && apk add --no-cache git make build-base
+
+WORKDIR /
+
+RUN git clone https://codeberg.org/emersion/soju && \
+        cd soju && \
+        git checkout $SOJU_VERSION && \
+        make soju
+
+FROM alpine:{{ soju_alpine_version }}
+
+# Copy the built binaries from the first stage
+COPY --from=build /soju/soju /usr/bin/soju
+COPY --from=build /soju/sojudb /usr/bin/sojudb
+COPY --from=build /soju/sojuctl /usr/bin/sojuctl
+
+CMD ["soju", "-config", "/etc/soju/config"]
