@@ -14,8 +14,8 @@ services:
     ports:
       - 127.0.0.1:8000:80
     networks:
-      - caddy_reverse_proxy
+      - nginx_reverse_proxy
 
 networks:
-  caddy_reverse_proxy:
+  nginx_reverse_proxy:
     external: true
