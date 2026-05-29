@@ -6,7 +6,7 @@ services:
     environment:
       TZ: "ET"
     networks:
-      - reverse_proxy
+      - nginx_reverse_proxy
     volumes:
       - ./sock:/run/soju
       - ./soju-config:/etc/soju/config
@@ -18,5 +18,5 @@ services:
       retries: 3
 
 networks:
-  reverse_proxy:
+  nginx_reverse_proxy:
     external: true

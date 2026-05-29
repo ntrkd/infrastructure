@@ -3,7 +3,7 @@ services:
     build: .
     container_name: nginx
     networks:
-      - reverse_proxy
+      - nginx_reverse_proxy
     ports:
       - "80:80"
       - "443:443"
@@ -13,5 +13,5 @@ services:
       - ./letsencrypt:/etc/letsencrypt
 
 networks:
-  reverse_proxy:
+  nginx_reverse_proxy:
     external: true
