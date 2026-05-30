@@ -25,14 +25,16 @@ fi
 # unzip {{ docker_dir }}/gitea/gitea/gitea-backup.zip -d {{ docker_dir }}/gitea/gitea/backup/
 
 echo Dumping vaultwarden database...
-sqlite3 {{ docker_dir }}/vaultwarden/data/db.sqlite3 ".backup '{{ docker_dir }}/vaultwarden/data/db-dump.sqlite3'"
+export VW_DB_BACKUP= '{{ docker_dir }}/vaultwarden/data/db-dump.sqlite3'
+sqlite3 {{ docker_dir }}/vaultwarden/data/db.sqlite3 ".backup ${VW_DB_BACKUP}"
 
 echo Initiating backup with restic...
 restic --verbose backup \
 	{{ docker_dir }}/vaultwarden/data/attachments \
 	{{ docker_dir }}/vaultwarden/data/sends \
 	{{ docker_dir }}/vaultwarden/data/log \
-	{{ docker_dir }}/vaultwarden/data/rsa*
+	{{ docker_dir }}/vaultwarden/data/rsa* \
+    $VW_DB_BACKUP
 	# {{ docker_dir }}/gitea/gitea \
 
 # echo Starting gitea...
@@ -41,7 +43,7 @@ restic --verbose backup \
 echo Cleaning up backup dumps...
 # rm -rf {{ docker_dir }}/gitea/gitea/backup
 # rm {{ docker_dir }}/gitea/gitea/gitea-backup.zip
-rm {{ docker_dir }}/vaultwarden/data/db-dump.sqlite3
+rm $VW_DB_BACKUP
 
 echo Running restic forget...
 restic forget \
