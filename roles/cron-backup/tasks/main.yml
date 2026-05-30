@@ -1,4 +1,4 @@
-- name: Ensure restic and sqlite3
+- name: Ensure packages
   ansible.builtin.apt:
     pkg:
       - sqlite3
@@ -11,3 +11,13 @@
     src: backup_script.j2
     dest: "{{ ansible_env.HOME }}/backup.sh"
     mode: "0700"
+
+- name: Creates a cron file under /etc/cron.d
+  ansible.builtin.cron:
+    name: restic backup
+    day: "*"
+    minute: "0"
+    hour: "1"
+    user: root
+    job: "root {{ ansible_env.HOME }}/backup.sh"
+    cron_file: ansible_restic_backup
