@@ -30,13 +30,6 @@
         name: install_docker
         tasks_from: main
 
-    # - name: Deploy Caddy reverse proxy
-    #   vars:
-    #     caddy_reverse_proxy_bouncer_key: "{{ sops.rproxy.caddy_cs_bouncer_token }}"
-    #   ansible.builtin.include_role:
-    #     name: caddy_reverse_proxy
-    #     tasks_from: main
-
     - name: Deploy Vaultwarden
       ansible.builtin.include_role:
         name: vaultwarden
@@ -50,4 +43,15 @@
     - name: Deploy NGINX reverse proxy
       ansible.builtin.include_role:
         name: nginx_reverse_proxy
+        tasks_from: main
+
+    - name: Install backup script
+      vars:
+        restic_repo_password: "{{ sops.restic.restic_repo_password }}"
+        restic_repo_path: "{{ sops.restic.restic_repo_path }}"
+        restic_hostname: "HDZ_main"
+        restic_s3_key_id: "{{ sops.restic.r2_token_id }}"
+        restic_s3_access_key: "{{ sops.restic.r2_token_secret }}"
+      ansible.builtin.include_role:
+        name: cron-backup
         tasks_from: main

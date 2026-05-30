@@ -1,0 +1,26 @@
+argument_specs:
+  main:
+    short_description: Backup data with restic
+    description:
+      - The user who runs this script determines where the restic config and cron job are installed in
+    options:
+      restic_repo_password:
+        type: str
+        required: true
+        description: password to unlock the restic repo
+      restic_repo_path:
+        type: str
+        required: true
+        description: restic url to the repo
+      restic_hostname:
+        type: str
+        required: true
+        description: name to use for the current host in restic snapshots
+      restic_s3_access_key:
+        type: str
+        required: true
+        description: secret for the s3 bucket
+      restic_s3_key_id:
+        type: str
+        required: true
+        description: id key for the s3 bucket
