@@ -6,6 +6,16 @@
       - unzip
     state: present
 
+- name: Set backup script directory variable
+  ansible.builtin.set_fact:
+    restic_backup_dir: "{{ ansible_env.HOME }}"
+
+- name: Output env file
+  ansible.builtin.template:
+    src: restic.env.j2
+    dest: "{{ restic_backup_dir }}/restic.env"
+    mode: "0600"
+
 - name: Output backup script
   ansible.builtin.template:
     src: backup_script.j2
