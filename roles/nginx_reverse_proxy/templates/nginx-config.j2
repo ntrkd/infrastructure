@@ -91,8 +91,8 @@ http {
         http2 on;
         server_name vw.{{ domain }};
 
-        ssl_certificate /etc/letsencrypt/live/vw.{{ domain }}/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/vw.{{ domain }}/privkey.pem;
+        ssl_certificate /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
         ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
         add_header Strict-Transport-Security "max-age=31536000;";
 
@@ -136,8 +136,8 @@ stream {
         proxy_pass soju:6667;
         proxy_protocol on;
 
-        ssl_certificate /etc/letsencrypt/live/irc.{{ domain }}/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/irc.{{ domain }}/privkey.pem;
+        ssl_certificate /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
         ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
     }
 }

@@ -1,14 +1,16 @@
 #!/bin/sh
 set -e
 
-DOMAIN=irc.{{ domain }},vw.{{ domain }}
+DOMAIN=irc.{{ domain }},vw.{{ domain }},git.{{ domain }}
 EMAIL=admin@{{ domain }}
 
 echo "Running certbot to grab certs if needed..."
 certbot certonly --standalone --non-interactive --agree-tos \
   -d "${DOMAIN}" \
   --email "${EMAIL}" \
-
+  --cert-name {{ domain }} \
+  --expand \
+  --preferred-challenges http
 
 # Generate dhparams.pem if needed. certbot certonly does not generate this.
 DHPARAM_FILE="/etc/letsencrypt/ssl-dhparams.pem"
