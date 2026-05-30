@@ -4,11 +4,17 @@
     state: directory
     mode: "0740"
 
-- name: Ensure log file is created as a file
+- name: Create vaultwarden log directory
+  ansible.builtin.file:
+    path: "{{ docker_dir }}/{{ role_name }}/data/log"
+    state: directory
+    mode: '0755'
+
+- name: Create vaultwarden log file
   ansible.builtin.file:
     path: "{{ docker_dir }}/{{ role_name }}/data/log/vaultwarden.log"
-    state: file
-    mode: "0740"
+    state: touch
+    mode: '0740'
 
 - name: Output compose file
   ansible.builtin.template:
@@ -17,7 +23,6 @@
     mode: "0700"
   notify:
     - Restart vaultwarden
-
 
 - name: Start {{ role_name }}
   community.docker.docker_compose_v2:

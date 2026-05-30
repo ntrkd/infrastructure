@@ -17,12 +17,6 @@
     state: directory
     mode: "0740"
 
-- name: Ensure admin socket is created
-  ansible.builtin.file:
-    path: "{{ docker_dir }}/{{ role_name }}/sock/soju-admin.sock"
-    state: touch
-    mode: "0740"
-
 - name: Output Dockerfile
   ansible.builtin.template:
     src: Dockerfile.j2
@@ -46,3 +40,7 @@
     mode: "0740"
   notify:
     - Restart soju
+
+- name: Start docker container
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_dir }}/{{ role_name }}"
