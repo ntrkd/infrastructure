@@ -1,0 +1,30 @@
+#! /bin/bash
+
+echo Sourcing restic variables...
+source {{ restic_backup_dir }}/restic.env
+
+export RESTORE_WORKSPACE="/tmp/restore_workspace"
+
+echo Creating restore workspace...
+rm -rf $RESTORE_WORKSPACE
+mkdir -p $RESTORE_WORKSPACE
+
+echo Cleaning Vaultwarden data directory...
+rm -rf {{ docker_dir }}/vaultwarden/data
+
+echo Restoring Vaultwarden...
+
+restic restore latest \
+	--include {{ docker_dir }}/vaultwarden/data/attachments \
+	--include {{ docker_dir }}/vaultwarden/data/sends \
+	--include {{ docker_dir }}/vaultwarden/data/log \
+	--include "{{ docker_dir }}/vaultwarden/data/rsa*" \
+    --include $VW_DB_BACKUP \
+    --target /
+
+mv $VW_DB_BACKUP {{ docker_dir }}/vaultwarden/data/db.sqlite3
+
+## Run ansible config with data dirs wiped
+## Bring down the containers
+## Run restore script
+## Bring containers up

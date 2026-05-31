@@ -4,6 +4,10 @@ argument_specs:
     description:
       - The user who runs this script determines where the restic config and cron job are installed in
     options:
+      docker_dir:
+        type: str
+        required: true
+        description: base path of the docker data directory
       restic_repo_password:
         type: str
         required: true

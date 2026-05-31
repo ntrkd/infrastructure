@@ -19,7 +19,13 @@
 - name: Output backup script
   ansible.builtin.template:
     src: backup_script.j2
-    dest: "{{ ansible_env.HOME }}/backup.sh"
+    dest: "{{ restic_backup_dir }}/backup.sh"
+    mode: "0700"
+
+- name: Output restore script
+  ansible.builtin.template:
+    src: restore_script.j2
+    dest: "{{ restic_backup_dir }}/restore.sh"
     mode: "0700"
 
 - name: Creates a cron file under /etc/cron.d
