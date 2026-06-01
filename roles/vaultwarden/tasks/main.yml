@@ -19,22 +19,6 @@
     owner: "{{ vaultwarden_uid }}"
     group: "{{ vaultwarden_gid }}"
 
-- name: Create vaultwarden log directory
-  ansible.builtin.file:
-    path: "{{ docker_dir }}/{{ role_name }}/data/log"
-    state: directory
-    mode: '0700'
-    owner: "{{ vaultwarden_uid }}"
-    group: "{{ vaultwarden_gid }}"
-
-- name: Create vaultwarden log file
-  ansible.builtin.file:
-    path: "{{ docker_dir }}/{{ role_name }}/data/log/vaultwarden.log"
-    state: touch
-    mode: '0700'
-    owner: "{{ vaultwarden_uid }}"
-    group: "{{ vaultwarden_gid }}"
-
 - name: Output compose file
   ansible.builtin.template:
     src: compose.j2
