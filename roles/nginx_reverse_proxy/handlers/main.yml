@@ -1,7 +1,7 @@
 ---
 - name: Restart nginx
   community.docker.docker_container:
-    name: nginx
+    name: "{{ role_name }}"
     restart: true
 
 - name: Rebuild nginx image
