@@ -9,3 +9,11 @@ argument_specs:
         type: str
         required: true
         description: the FQDN domain name (example.com)
+      vaultwarden_uid:
+        type: int
+        required: true
+        description: UID of the vaultwarden user
+      vaultwarden_gid:
+        type: int
+        required: true
+        description: GID of the vaultwarden user

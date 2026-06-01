@@ -1,26 +1,47 @@
+- name: Make the vaultwarden user
+  ansible.builtin.user:
+    name: vaultwarden
+    uid: "{{ vaultwarden_uid }}"
+    create_home: false
+    shell: /usr/sbin/nologin
+
+- name: Vaultwarden group
+  ansible.builtin.group:
+    name: vaultwarden
+    state: present
+    gid: "{{ vaultwarden_gid }}"
+
 - name: Ensure directory is created
   ansible.builtin.file:
     path: "{{ docker_dir }}/{{ role_name }}"
     state: directory
-    mode: "0740"
+    mode: "0700"
+    owner: "{{ vaultwarden_uid }}"
+    group: "{{ vaultwarden_gid }}"
 
 - name: Create vaultwarden log directory
   ansible.builtin.file:
     path: "{{ docker_dir }}/{{ role_name }}/data/log"
     state: directory
-    mode: '0755'
+    mode: '0700'
+    owner: "{{ vaultwarden_uid }}"
+    group: "{{ vaultwarden_gid }}"
 
 - name: Create vaultwarden log file
   ansible.builtin.file:
     path: "{{ docker_dir }}/{{ role_name }}/data/log/vaultwarden.log"
     state: touch
-    mode: '0740'
+    mode: '0700'
+    owner: "{{ vaultwarden_uid }}"
+    group: "{{ vaultwarden_gid }}"
 
 - name: Output compose file
   ansible.builtin.template:
     src: compose.j2
     dest: "{{ docker_dir }}/{{ role_name }}/compose.yml"
     mode: "0700"
+    owner: "{{ vaultwarden_uid }}"
+    group: "{{ vaultwarden_gid }}"
   notify:
     - Restart vaultwarden
 
@@ -30,8 +51,8 @@
 
 - name: Set permissions
   ansible.builtin.file:
-    path: "{{ docker_dir }}/{{ role_name }}/data"
-    owner: 1000
-    group: 1000
-    mode: "0740"
+    path: "{{ docker_dir }}/{{ role_name }}"
+    owner: "{{ vaultwarden_uid }}"
+    group: "{{ vaultwarden_gid }}"
+    mode: "0700"
     recurse: true

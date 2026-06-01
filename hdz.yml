@@ -31,6 +31,9 @@
         tasks_from: main
 
     - name: Deploy Vaultwarden
+      vars:
+        vaultwarden_gid: 6001
+        vaultwarden_uid: 6001
       ansible.builtin.include_role:
         name: vaultwarden
         tasks_from: main
