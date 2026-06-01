@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     environment:
       TZ: "ET"
+    user: {{ soju_uid }}:{{ soju_gid }}
     networks:
       - nginx_reverse_proxy
     volumes:

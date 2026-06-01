@@ -1,27 +1,48 @@
 ---
+- name: Make the vaultwarden user
+  ansible.builtin.user:
+    name: soju
+    uid: "{{ soju_uid }}"
+    create_home: false
+    shell: /usr/sbin/nologin
+
+- name: Vaultwarden group
+  ansible.builtin.group:
+    name: soju
+    state: present
+    gid: "{{ soju_gid }}"
+
 - name: Ensure directory is created
   ansible.builtin.file:
     path: "{{ docker_dir }}/{{ role_name }}"
     state: directory
-    mode: "0740"
+    mode: "0700"
+    owner: "{{ soju_uid }}"
+    group: "{{ soju_gid }}"
 
 - name: Ensure data directory is created
   ansible.builtin.file:
     path: "{{ docker_dir }}/{{ role_name }}/data"
     state: directory
-    mode: "0740"
+    mode: "0700"
+    owner: "{{ soju_uid }}"
+    group: "{{ soju_gid }}"
 
 - name: Ensure socket directory is created
   ansible.builtin.file:
     path: "{{ docker_dir }}/{{ role_name }}/sock"
     state: directory
-    mode: "0740"
+    mode: "0700"
+    owner: "{{ soju_uid }}"
+    group: "{{ soju_gid }}"
 
 - name: Output Dockerfile
   ansible.builtin.template:
     src: Dockerfile.j2
     dest: "{{ docker_dir }}/{{ role_name }}/Dockerfile"
-    mode: "0740"
+    mode: "0700"
+    owner: "{{ soju_uid }}"
+    group: "{{ soju_gid }}"
   notify:
     - Rebuild soju image
 
@@ -29,7 +50,9 @@
   ansible.builtin.template:
     src: compose.j2
     dest: "{{ docker_dir }}/{{ role_name }}/compose.yml"
-    mode: "0740"
+    mode: "0700"
+    owner: "{{ soju_uid }}"
+    group: "{{ soju_gid }}"
   notify:
     - Restart soju
 
@@ -37,7 +60,9 @@
   ansible.builtin.template:
     src: soju-config.j2
     dest: "{{ docker_dir }}/{{ role_name }}/soju-config"
-    mode: "0740"
+    mode: "0700"
+    owner: "{{ soju_uid }}"
+    group: "{{ soju_gid }}"
   notify:
     - Restart soju
 
