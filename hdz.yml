@@ -39,6 +39,9 @@
         tasks_from: main
 
     - name: Deploy soju bouncer
+      vars:
+        soju_uid: 6002
+        soju_gid: 6002
       ansible.builtin.include_role:
         name: soju
         tasks_from: main
