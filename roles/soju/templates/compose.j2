@@ -1,7 +1,7 @@
 services:
   soju:
     build: .
-    container_name: soju
+    container_name: {{ role_name }}
     restart: unless-stopped
     environment:
       TZ: "ET"

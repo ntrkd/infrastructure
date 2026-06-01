@@ -1,7 +1,7 @@
 services:
   vaultwarden:
     image: vaultwarden/server:{{ vaultwarden_version }}
-    container_name: vaultwarden
+    container_name: {{ role_name }}
     restart: unless-stopped
     user: {{ vaultwarden_uid }}:{{ vaultwarden_gid }}
     environment:
