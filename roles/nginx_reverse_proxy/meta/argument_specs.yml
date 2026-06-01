@@ -9,3 +9,11 @@ argument_specs:
         type: str
         required: true
         description: the FQDN domain name (example.com)
+      nginx_uid:
+        type: int
+        required: true
+        description: UID of the nginx user
+      nginx_gid:
+        type: int
+        required: true
+        description: GID of the nginx user

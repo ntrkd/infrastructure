@@ -1,15 +1,32 @@
 ---
+- name: Make the nginx user
+  ansible.builtin.user:
+    name: nginx
+    uid: "{{ nginx_uid }}"
+    create_home: false
+    shell: /usr/sbin/nologin
+
+- name: Nginx group
+  ansible.builtin.group:
+    name: nginx
+    state: present
+    gid: "{{ nginx_gid }}"
+
 - name: Ensure directory is created
   ansible.builtin.file:
     path: "{{ docker_dir }}/{{ role_name }}"
     state: directory
     mode: "0740"
+    owner: "{{ nginx_uid }}"
+    group: "{{ nginx_gid }}"
 
 - name: Output Dockerfile
   ansible.builtin.template:
     src: Dockerfile.j2
     dest: "{{ docker_dir }}/{{ role_name }}/Dockerfile"
     mode: "0740"
+    owner: "{{ nginx_uid }}"
+    group: "{{ nginx_gid }}"
   notify:
     - Rebuild nginx image
 
@@ -18,6 +35,8 @@
     src: entrypoint.j2
     dest: "{{ docker_dir }}/{{ role_name }}/entrypoint.sh"
     mode: "0740"
+    owner: "{{ nginx_uid }}"
+    group: "{{ nginx_gid }}"
   notify:
     - Rebuild nginx image
 
@@ -26,6 +45,8 @@
     src: nginx-config.j2
     dest: "{{ docker_dir }}/{{ role_name }}/nginx.conf"
     mode: "0740"
+    owner: "{{ nginx_uid }}"
+    group: "{{ nginx_gid }}"
   notify:
     - Rebuild nginx image
 
@@ -34,6 +55,8 @@
     src: compose.j2
     dest: "{{ docker_dir }}/{{ role_name }}/compose.yml"
     mode: "0740"
+    owner: "{{ nginx_uid }}"
+    group: "{{ nginx_gid }}"
   notify:
     - Restart nginx
 
