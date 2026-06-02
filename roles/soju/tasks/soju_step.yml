@@ -1,0 +1,21 @@
+- name: Run command step
+  community.docker.docker_container_exec:
+    container: "{{ role_name }}"
+    command: "{{ step.cmd }}"
+  register: soju_cmd_result
+  failed_when: false
+  changed_when: false
+  when: step.cmd is defined
+
+
+- name: Wait for network to be connected
+  community.docker.docker_container_exec:
+    container: "{{ role_name }}"
+    command: "sojuctl user run {{ soju_user }} network status"
+  register: soju_net_status
+  retries: 60
+  delay: 2
+  until: >
+    soju_net_status.stdout is search(step.wait)
+    and soju_net_status.stdout is search('\\[connected\\]')
+  when: step.wait is defined

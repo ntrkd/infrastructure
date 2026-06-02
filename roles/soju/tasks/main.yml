@@ -96,11 +96,11 @@
   failed_when: false
   changed_when: "'already exists' not in (soju_user_make.stdout + soju_user_make.stderr)"
 
-- name: Execute configuration commands inside container
-  community.docker.docker_container_exec:
-    container: "{{ role_name }}"
-    command: "{{ item }}"
-  register: soju_cmd_res
-  failed_when: false
-  changed_when: false
+- name: Flush role handlers now
+  ansible.builtin.meta: flush_handlers
+
+- name: Run commands and waits sequentially
+  ansible.builtin.include_tasks: soju_step.yml
   loop: "{{ soju_commands }}"
+  loop_control:
+    loop_var: step
