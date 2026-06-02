@@ -1,0 +1,15 @@
+argument_specs:
+  main:
+    options:
+      soju_user:
+        type: str
+        required: true
+        description: username for the soju user
+      soju_password:
+        type: str
+        required: true
+        description: password for the soju user
+      soju_commands:
+        type: list
+        required: true
+        description: list of commands to run inside the container

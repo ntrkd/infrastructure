@@ -42,6 +42,9 @@
       vars:
         soju_uid: 6002
         soju_gid: 6002
+        soju_user: "{{ sops.soju.user }}"
+        soju_password: "{{ sops.soju.password }}"
+        soju_commands: "{{ sops.soju.cmds }}"
       ansible.builtin.include_role:
         name: soju
         tasks_from: main

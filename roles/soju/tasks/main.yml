@@ -69,3 +69,38 @@
 - name: Start docker container
   community.docker.docker_compose_v2:
     project_src: "{{ docker_dir }}/{{ role_name }}"
+
+- name: Wait for container to be running
+  community.docker.docker_container_info:
+    name: "{{ role_name }}"
+  register: soju_container_info
+  retries: 10
+  delay: 2
+  until: soju_container_info.container.State.Running
+
+- name: Wait for soju admin socket to be ready
+  community.docker.docker_container_exec:
+    container: "{{ role_name }}"
+    command: "test -S /run/soju/soju-admin.sock"
+  changed_when: false
+  register: soju_socket_check
+  retries: 15
+  delay: 2
+  until: soju_socket_check.rc == 0
+
+- name: Make soju user
+  community.docker.docker_container_exec:
+    container: "{{ role_name }}"
+    command: "sojuctl user create -username {{ soju_user }} -password {{ soju_password }} -admin -nick {{ soju_user }} -realname {{ soju_user }} -enabled"
+  register: soju_user_make
+  failed_when: false
+  changed_when: "'already exists' not in (soju_user_make.stdout + soju_user_make.stderr)"
+
+- name: Execute configuration commands inside container
+  community.docker.docker_container_exec:
+    container: "{{ role_name }}"
+    command: "{{ item }}"
+  register: soju_cmd_res
+  failed_when: false
+  changed_when: false
+  loop: "{{ soju_commands }}"
