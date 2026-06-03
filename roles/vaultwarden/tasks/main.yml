@@ -1,13 +1,13 @@
-- name: Make the vaultwarden user
+- name: Make the user {{ role_name }}
   ansible.builtin.user:
-    name: vaultwarden
+    name: "{{ role_name }}"
     uid: "{{ vaultwarden_uid }}"
     create_home: false
     shell: /usr/sbin/nologin
 
-- name: Vaultwarden group
+- name: Make the group {{ role_name }}
   ansible.builtin.group:
-    name: vaultwarden
+    name: "{{ role_name }}"
     state: present
     gid: "{{ vaultwarden_gid }}"
 
