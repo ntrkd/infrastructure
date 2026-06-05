@@ -1,0 +1,11 @@
+server {
+    listen 1667 ssl;
+    server_name irc.{{ domain }};
+
+    proxy_pass soju:6667;
+    proxy_protocol on;
+
+    ssl_certificate /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+}
