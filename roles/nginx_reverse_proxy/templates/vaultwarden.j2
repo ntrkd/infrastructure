@@ -1,3 +1,9 @@
+upstream vaultwarden-default {
+    zone vaultwarden-default 64k;
+    server vaultwarden:80;
+    keepalive 2;
+}
+
 server {
     listen 80;
     listen [::]:80;
@@ -31,6 +37,7 @@ server {
     proxy_set_header X-Forwarded-Proto $scheme;
 
     location / {
+        set $
         proxy_pass http://vaultwarden-default;
     }
 

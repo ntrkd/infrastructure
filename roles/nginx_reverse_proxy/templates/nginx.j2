@@ -45,12 +45,6 @@ http {
 
     keepalive_timeout 75 20;
 
-    upstream vaultwarden-default {
-        zone vaultwarden-default 64k;
-        server vaultwarden:80;
-        keepalive 2;
-    }
-
     map $http_upgrade $connection_upgrade {
         default upgrade;
         '' "";
