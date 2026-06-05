@@ -28,7 +28,6 @@ RUN set -ex; \
     # hardlink to path
     ln -s /opt/certbot/bin/certbot /usr/local/bin/certbot
 
-COPY nginx.conf /etc/nginx/nginx.conf
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 

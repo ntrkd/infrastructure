@@ -11,6 +11,7 @@ services:
     volumes:
       - /etc/docker/soju/sock:/run/soju
       - ./letsencrypt:/etc/letsencrypt
+      - ./nginx.conf:/etc/nginx/nginx.conf
 
 networks:
   nginx_reverse_proxy:
