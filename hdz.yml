@@ -30,6 +30,14 @@
         name: install_docker
         tasks_from: main
 
+    - name: Deploy NGINX reverse proxy
+      vars:
+        nginx_cf_dns_api_token: "{{ sops.rproxy.cf_dns_api_token }}"
+        nginx_cf_account_id: "{{ sops.rproxy.cf_account_id }}"
+      ansible.builtin.include_role:
+        name: nginx
+        tasks_from: main
+
     - name: Deploy Vaultwarden
       vars:
         vaultwarden_gid: 6001
@@ -47,11 +55,6 @@
         soju_commands: "{{ sops.soju.cmds }}"
       ansible.builtin.include_role:
         name: soju
-        tasks_from: main
-
-    - name: Deploy NGINX reverse proxy
-      ansible.builtin.include_role:
-        name: nginx_reverse_proxy
         tasks_from: main
 
     - name: Install backup script

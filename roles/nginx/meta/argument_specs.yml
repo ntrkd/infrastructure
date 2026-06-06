@@ -9,3 +9,11 @@ argument_specs:
         type: str
         required: true
         description: the FQDN domain name (example.com)
+      nginx_cf_dns_api_token:
+        type: str
+        required: true
+        description: account API token with DNS edit permissions
+      nginx_cf_account_id:
+        type: str
+        required: true
+        description: account ID of the cloudflare account
