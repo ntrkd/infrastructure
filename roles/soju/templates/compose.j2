@@ -2,6 +2,7 @@ services:
   soju:
     build: .
     container_name: {{ role_name }}
+    hostname: irc.{{ domain }}
     restart: unless-stopped
     environment:
       TZ: "ET"
