@@ -8,7 +8,10 @@ export CF_Account_ID="{{ nginx_cf_account_id }}"
     --config-home /acme/config \
     --cert-home /acme/certs \
     --issue -d '*.{{ domain }}' --dns dns_cf
-/root/.acme.sh/acme.sh --list
+
+/root/.acme.sh/acme.sh --list \
+    --config-home /acme/config \
+    --cert-home /acme/certs
 
 mkdir -p /etc/nginx/certs/live/{{ domain }}
 /root/.acme.sh/acme.sh --install-cert -d *.{{ domain }} \
