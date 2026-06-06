@@ -69,10 +69,6 @@
   notify:
     - Restart nginx
 
-- name: Create nginx network
-  community.docker.docker_network:
-    name: nginx_reverse_proxy
-
 - name: Start docker container
   community.docker.docker_compose_v2:
     project_src: "{{ docker_dir }}/{{ role_name }}"

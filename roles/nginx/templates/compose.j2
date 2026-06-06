@@ -9,7 +9,6 @@ services:
       - "443:443"
       - "1667:1667"
     volumes:
-      - /etc/docker/soju/sock:/run/soju
       - ./acme:/acme/
       - ./certs:/etc/nginx/certs
       - ./nginx.conf:/etc/nginx/nginx.conf
@@ -18,3 +17,4 @@ services:
 
 networks:
   nginx_reverse_proxy:
+    name: nginx_reverse_proxy
