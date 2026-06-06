@@ -11,24 +11,24 @@
 
     # This will need to become a separate playbook later.
     # The rest of these roles should be run as an ansible user anyway.
-    # - name: Create the automation user
-    #   vars:
-    #     bootstrap_user_name: "{{ automation_user }}"
-    #     bootstrap_user_pswd_hash: "{{ sops.auth.automation_user_pswd_hash }}"
-    #     bootstrap_user_groups: "{{ automation_groups }}"
-    #   ansible.builtin.include_role:
-    #     name: bootstrap_user
-    #     tasks_from: main
+    - name: Create the automation user
+      vars:
+        bootstrap_user_name: "{{ automation_user }}"
+        bootstrap_user_pswd_hash: "{{ sops.auth.automation_user_pswd_hash }}"
+        bootstrap_user_groups: "{{ automation_groups }}"
+      ansible.builtin.include_role:
+        name: bootstrap_user
+        tasks_from: main
 
-    # - name: Configure iptables firewall
-    #   ansible.builtin.include_role:
-    #     name: firewall
-    #     tasks_from: main
+    - name: Configure iptables firewall
+      ansible.builtin.include_role:
+        name: firewall
+        tasks_from: main
 
-    # - name: Install docker
-    #   ansible.builtin.include_role:
-    #     name: install_docker
-    #     tasks_from: main
+    - name: Install docker
+      ansible.builtin.include_role:
+        name: install_docker
+        tasks_from: main
 
     - name: Deploy NGINX reverse proxy
       vars:
@@ -38,32 +38,32 @@
         name: nginx
         tasks_from: main
 
-    # - name: Deploy Vaultwarden
-    #   vars:
-    #     vaultwarden_gid: 6001
-    #     vaultwarden_uid: 6001
-    #   ansible.builtin.include_role:
-    #     name: vaultwarden
-    #     tasks_from: main
+    - name: Deploy Vaultwarden
+      vars:
+        vaultwarden_gid: 6001
+        vaultwarden_uid: 6001
+      ansible.builtin.include_role:
+        name: vaultwarden
+        tasks_from: main
 
-    # - name: Deploy soju bouncer
-    #   vars:
-    #     soju_uid: 6002
-    #     soju_gid: 6002
-    #     soju_user: "{{ sops.soju.user }}"
-    #     soju_password: "{{ sops.soju.password }}"
-    #     soju_commands: "{{ sops.soju.cmds }}"
-    #   ansible.builtin.include_role:
-    #     name: soju
-    #     tasks_from: main
+    - name: Deploy soju bouncer
+      vars:
+        soju_uid: 6002
+        soju_gid: 6002
+        soju_user: "{{ sops.soju.user }}"
+        soju_password: "{{ sops.soju.password }}"
+        soju_commands: "{{ sops.soju.cmds }}"
+      ansible.builtin.include_role:
+        name: soju
+        tasks_from: main
 
-    # - name: Install backup script
-    #   vars:
-    #     restic_repo_password: "{{ sops.restic.restic_repo_password }}"
-    #     restic_repo_path: "{{ sops.restic.restic_repo_path }}"
-    #     restic_hostname: "HDZ_main"
-    #     restic_s3_key_id: "{{ sops.restic.r2_token_id }}"
-    #     restic_s3_access_key: "{{ sops.restic.r2_token_secret }}"
-    #   ansible.builtin.include_role:
-    #     name: cron-backup
-    #     tasks_from: main
+    - name: Install backup script
+      vars:
+        restic_repo_password: "{{ sops.restic.restic_repo_password }}"
+        restic_repo_path: "{{ sops.restic.restic_repo_path }}"
+        restic_hostname: "HDZ_main"
+        restic_s3_key_id: "{{ sops.restic.r2_token_id }}"
+        restic_s3_access_key: "{{ sops.restic.r2_token_secret }}"
+      ansible.builtin.include_role:
+        name: cron-backup
+        tasks_from: main
