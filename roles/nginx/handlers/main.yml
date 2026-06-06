@@ -1,9 +1,4 @@
 ---
-- name: Restart nginx
-  community.docker.docker_container:
-    name: "{{ role_name }}"
-    restart: true
-
 - name: Rebuild nginx image
   become: true
   community.docker.docker_compose_v2:
@@ -11,3 +6,8 @@
     state: present # docker compose up -d
     build: always # docker compose build
     files: compose.yml
+
+- name: Restart nginx
+  community.docker.docker_container:
+    name: "{{ role_name }}"
+    restart: true

@@ -19,9 +19,9 @@ server {
 
     server_name vw.{{ domain }};
 
-    ssl_certificate /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    ssl_certificate /etc/nginx/certs/live/{{ domain }}/cert.pem;
+    ssl_certificate_key /etc/nginx/certs/live/{{ domain }}/key.pem;
+    ssl_dhparam /etc/nginx/certs/ssl-dhparams.pem;
 
     add_header Strict-Transport-Security "max-age=31536000;";
 
@@ -37,7 +37,6 @@ server {
     proxy_set_header X-Forwarded-Proto $scheme;
 
     location / {
-        set $
         proxy_pass http://vaultwarden-default;
     }
 

@@ -33,11 +33,21 @@
   notify:
     - Rebuild nginx image
 
+- name: Output acme-setup.sh
+  ansible.builtin.template:
+    src: acme-setup.j2
+    dest: "{{ docker_dir }}/{{ role_name }}/acme-setup.sh"
+    mode: "0740"
+  notify:
+    - Rebuild nginx image
+
 - name: Output nginx.conf
   ansible.builtin.template:
-    src: nginx-config.j2
+    src: nginx.j2
     dest: "{{ docker_dir }}/{{ role_name }}/nginx.conf"
     mode: "0740"
+  notify:
+    - Restart nginx
 
 - name: Output soju.conf
   ansible.builtin.template:

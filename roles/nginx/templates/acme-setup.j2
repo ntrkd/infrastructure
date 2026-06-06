@@ -1,0 +1,16 @@
+chmod +x /root/.acme.sh/acme.sh
+/root/.acme.sh/acme.sh --upgrade --auto-upgrade
+
+export CF_Token="{{ nginx_cf_dns_api_token }}"
+export CF_Account_ID="{{ nginx_cf_account_id }}"
+
+/root/.acme.sh/acme.sh --server letsencrypt --issue -d {{ domain }} -d '*.{{ domain }}' --dns dns_cf
+/root/.acme.sh/acme.sh --list
+
+mkdir -p /etc/nginx/certs/live/{{ domain }}
+/root/.acme.sh/acme.sh --install-cert -d {{ domain }} \
+    --key-file       /etc/nginx/certs/live/{{ domain }}/key.pem  \
+    --fullchain-file /etc/nginx/certs/live/{{ domain }}/cert.pem \
+    --reloadcmd     "nginx -s reload"
+
+echo acme-setup.sh finished

@@ -10,7 +10,8 @@ services:
       - "1667:1667"
     volumes:
       - /etc/docker/soju/sock:/run/soju
-      - ./letsencrypt:/etc/letsencrypt
+      - ./acme.sh:/acme.sh/
+      - ./certs:/etc/nginx/certs
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./conf.d:/etc/nginx/conf.d
       - ./stream.d:/etc/nginx/stream.d

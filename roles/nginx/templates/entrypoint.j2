@@ -1,19 +1,8 @@
 #!/bin/sh
 set -e
 
-DOMAIN=irc.{{ domain }},vw.{{ domain }},git.{{ domain }}
-EMAIL=admin@{{ domain }}
-
-echo "Running certbot to grab certs if needed..."
-certbot certonly --standalone --non-interactive --agree-tos \
-  -d "${DOMAIN}" \
-  --email "${EMAIL}" \
-  --cert-name {{ domain }} \
-  --expand \
-  --preferred-challenges http
-
-# Generate dhparams.pem if needed. certbot certonly does not generate this.
-DHPARAM_FILE="/etc/letsencrypt/ssl-dhparams.pem"
+# Generate dhparams.pem if needed
+DHPARAM_FILE="/etc/nginx/certs/ssl-dhparams.pem"
 generate_dhparams() {
   openssl dhparam -out "$DHPARAM_FILE" 2048
 }
@@ -32,5 +21,10 @@ else
   fi
 fi
 
+echo "Running acme-setup.sh"
+chmod +x /acme-setup.sh
+sh /acme-setup.sh
+
 echo "Starting nginx..."
+rm -f /run/nginx.pid
 exec nginx -g "daemon off;"

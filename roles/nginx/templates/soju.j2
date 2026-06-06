@@ -1,0 +1,13 @@
+server {
+    listen 1667 ssl;
+    server_name irc.{{ domain }};
+
+    resolver 127.0.0.11 valid=10s;
+    set $soju_backend soju:6667;
+    proxy_pass $soju_backend;
+    proxy_protocol on;
+
+    ssl_certificate /etc/nginx/certs/live/{{ domain }}/cert.pem;
+    ssl_certificate_key /etc/nginx/certs/live/{{ domain }}/key.pem;
+    ssl_dhparam /etc/nginx/certs/ssl-dhparams.pem;
+}
