@@ -57,6 +57,11 @@
         name: soju
         tasks_from: main
 
+    - name: Deploy dokploy
+      ansible.builtin.include_role:
+        name: dokploy
+        tasks_from: main
+
     - name: Install backup script
       vars:
         restic_repo_password: "{{ sops.restic.restic_repo_password }}"

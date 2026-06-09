@@ -9,6 +9,11 @@ export CF_Account_ID="{{ nginx_cf_account_id }}"
     --cert-home /acme/certs \
     --issue -d '*.{{ domain }}' --dns dns_cf
 
+/root/.acme.sh/acme.sh --server letsencrypt \
+    --config-home /acme/config \
+    --cert-home /acme/certs \
+    --issue -d '*.ad.{{ domain }}' --dns dns_cf
+
 /root/.acme.sh/acme.sh --list \
     --config-home /acme/config \
     --cert-home /acme/certs
@@ -19,6 +24,14 @@ mkdir -p /etc/nginx/certs/live/{{ domain }}
     --cert-home /acme/certs \
     --key-file       /etc/nginx/certs/live/{{ domain }}/key.pem  \
     --fullchain-file /etc/nginx/certs/live/{{ domain }}/cert.pem \
+    --reloadcmd     "nginx -s reload"
+
+mkdir -p /etc/nginx/certs/live/ad.{{ domain }}
+/root/.acme.sh/acme.sh --install-cert -d *.ad.{{ domain }} \
+    --config-home /acme/config \
+    --cert-home /acme/certs \
+    --key-file       /etc/nginx/certs/live/ad.{{ domain }}/key.pem  \
+    --fullchain-file /etc/nginx/certs/live/ad.{{ domain }}/cert.pem \
     --reloadcmd     "nginx -s reload"
 
 echo acme-setup.sh finished

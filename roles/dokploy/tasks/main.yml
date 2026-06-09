@@ -1,0 +1,29 @@
+- name: Check if dokploy service exists
+  ansible.builtin.shell: docker service inspect dokploy >/dev/null 2>&1
+  register: dokploy_service_check
+  changed_when: false
+  failed_when: false
+
+- name: Make dokploy dir
+  ansible.builtin.file:
+    path: /etc/dokploy
+    state: directory
+    mode: "0777"
+
+- name: Copy install file
+  ansible.builtin.copy:
+    src: install.sh
+    dest: /etc/dokploy/install.sh
+    mode: "0770"
+
+- name: Copy uninstall file
+  ansible.builtin.copy:
+    src: uninstall.sh
+    dest: /etc/dokploy/uninstall.sh
+    mode: "0770"
+
+- name: Run installer for dokploy service
+  ansible.builtin.command:
+    cmd: /etc/dokploy/install.sh
+  changed_when: true
+  when: dokploy_service_check.rc != 0
