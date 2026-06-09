@@ -4,6 +4,7 @@ services:
     container_name: {{ role_name }}
     networks:
       - nginx_reverse_proxy
+      - dokploy-network
     ports:
       - "80:80"
       - "443:443"
@@ -17,4 +18,6 @@ services:
 
 networks:
   nginx_reverse_proxy:
-    name: nginx_reverse_proxy
+    external: true
+  dokploy-network:
+    external: true
