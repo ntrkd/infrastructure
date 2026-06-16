@@ -51,6 +51,19 @@ http {
         '' "";
     }
 
+    # Reject anyone not accessing with a proper Host header
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        listen 443 ssl default_server;
+        listen [::]:443 ssl default_server;
+
+        server_name _;
+
+        ssl_reject_handshake on;
+    }
+
     include /etc/nginx/conf.d/*.conf;
 }
 
