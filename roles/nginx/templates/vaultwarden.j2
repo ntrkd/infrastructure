@@ -1,6 +1,7 @@
 upstream vaultwarden-default {
     zone vaultwarden-default 64k;
-    server vaultwarden:80;
+    resolver 127.0.0.11 valid=10s ipv6=off;
+    server vaultwarden:80 resolve;
     keepalive 2;
 }
 

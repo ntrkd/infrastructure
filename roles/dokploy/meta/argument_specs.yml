@@ -1,0 +1,23 @@
+argument_specs:
+  main:
+    options:
+      docker_dir:
+        type: str
+        required: true
+        description: path to the docker container directory
+      domain:
+        type: str
+        required: true
+        description: the FQDN domain name (example.com)
+      dokploy_postgres_password:
+        type: str
+        required: true
+        description: password for the postgres database (crucial)
+      dokploy_auth_secret:
+        type: str
+        required: true
+        description: auth secret for dokploy. if changed just signs people out
+      dokploy_reverse_proxy_container_name:
+        type: str
+        required: true
+        description: name of the reverse proxy container

@@ -58,6 +58,9 @@
         tasks_from: main
 
     - name: Deploy dokploy
+      vars:
+        dokploy_postgres_password: "{{ sops.dokploy.postgres_password }}"
+        dokploy_auth_secret: "{{ sops.dokploy.auth_secret }}"
       ansible.builtin.include_role:
         name: dokploy
         tasks_from: main

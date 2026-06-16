@@ -1,29 +1,184 @@
-- name: Check if dokploy service exists
-  ansible.builtin.shell: docker service inspect dokploy >/dev/null 2>&1
-  register: dokploy_service_check
-  changed_when: false
-  failed_when: false
-
 - name: Make dokploy dir
   ansible.builtin.file:
-    path: /etc/dokploy
+    path: "/etc/dokploy"
     state: directory
     mode: "0777"
 
-- name: Copy install file
-  ansible.builtin.copy:
-    src: install.sh
-    dest: /etc/dokploy/install.sh
-    mode: "0770"
+- name: Get private IP address
+  ansible.builtin.shell: >-
+    set -o pipefail; ip addr show |
+    grep -E "inet (192\.168\.|10\.|172\.1[6-9]\.|172\.2[0-9]\.|172\.3[0-1]\.)" |
+    head -n1 | awk '{print $2}' | cut -d/ -f1
+  args:
+    executable: /bin/bash
+  register: dokploy_private_ip_output
+  changed_when: false
 
-- name: Copy uninstall file
-  ansible.builtin.copy:
-    src: uninstall.sh
-    dest: /etc/dokploy/uninstall.sh
-    mode: "0770"
+- name: Set private IP fact
+  ansible.builtin.set_fact:
+    dokploy_private_ip: "{{ dokploy_private_ip_output.stdout }}"
 
-- name: Run installer for dokploy service
+- name: Get public IP from AWS checker service
+  ansible.builtin.uri:
+    url: https://checkip.amazonaws.com/
+    return_content: true
+  register: dokploy_public_ip_response
+  changed_when: false
+
+- name: Set dokploy_public_ip fact
+  ansible.builtin.set_fact:
+    dokploy_public_ip: "{{ dokploy_public_ip_response.content | trim }}"
+
+- name: Create swarm
+  community.docker.docker_swarm:
+    state: present
+    advertise_addr: "{{ dokploy_public_ip }}"
+
+- name: Create dokploy overlay network
+  community.docker.docker_network:
+    name: dokploy-network
+    driver: overlay
+    attachable: true
+
+- name: Store postgres secret
+  community.docker.docker_secret:
+    name: dokploy_postgres_password
+    state: present
+    data: "{{ dokploy_postgres_password }}"
+
+- name: Store auth secret
+  community.docker.docker_secret:
+    name: dokploy_auth_secret
+    state: present
+    data: "{{ dokploy_auth_secret }}"
+
+- name: Create dokploy postgres service
+  community.docker.docker_swarm_service:
+    name: dokploy-postgres
+    state: present
+    image: "postgres:{{ dokploy_postgres_version }}"
+    env:
+      POSTGRES_USER: dokploy
+      POSTGRES_DB: dokploy
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    mounts:
+      - source: dokploy-postgres
+        target: /var/lib/postgresql/data
+        type: volume
+    secrets:
+      - secret_name: dokploy_postgres_password
+        filename: /run/secrets/postgres_password
+    placement:
+      constraints:
+        - node.role == manager
+    networks:
+      - dokploy-network
+
+- name: Create dokploy redis service
+  community.docker.docker_swarm_service:
+    name: dokploy-redis
+    state: present
+    image: "redis:{{ dokploy_redis_version }}"
+    mounts:
+      - source: dokploy-redis
+        target: /data
+        type: volume
+    placement:
+      constraints:
+        - node.role == manager
+    networks:
+      - dokploy-network
+
+- name: Create dokploy service
+  community.docker.docker_swarm_service:
+    name: dokploy
+    state: present
+    image: dokploy/dokploy:{{ dokploy_version }}
+    replicas: 1
+    mounts:
+      - source: dokploy
+        target: /root/.docker
+        type: volume
+      - source: /etc/dokploy
+        target: /etc/dokploy
+        type: bind
+      - source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        type: bind
+        readonly: true
+    secrets:
+      - secret_name: dokploy_postgres_password
+        filename: /run/secrets/postgres_password
+      - secret_name: dokploy_auth_secret
+        filename: /run/secrets/dokploy_auth_secret
+    publish:
+      - published_port: 3000
+        target_port: 3000
+        protocol: tcp
+        mode: host
+    placement:
+      constraints:
+        - node.role == manager
+    update_config:
+      parallelism: 1
+      order: stop-first
+    env:
+      RELEASE_TAG: "{{ dokploy_release_tag }}"
+      ADVERTISE_ADDR: "{{ dokploy_private_ip }}"
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      BETTER_AUTH_SECRET_FILE: /run/secrets/dokploy_auth_secret
+      ALLOWED_ORIGINS: https://deploy.{{ domain }}
+    networks:
+      - dokploy-network
+
+- name: Pause for 10 seconds
+  ansible.builtin.pause:
+    seconds: 10
+
+- name: Create dokploy traefik service
+  community.docker.docker_swarm_service:
+    name: dokploy-traefik
+    state: present
+    image: "traefik:{{ dokploy_traefik_version }}"
+    mounts:
+      - source: "/etc/dokploy/traefik/traefik.yml"
+        target: /etc/traefik/traefik.yml
+        type: bind
+      - source: "/etc/dokploy/traefik/dynamic"
+        target: /etc/dokploy/traefik/dynamic
+        type: bind
+      - source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        type: bind
+        readonly: true
+    replicas: 1
+    update_config:
+      parallelism: 1
+      order: stop-first
+    placement:
+      constraints:
+        - node.role == manager
+    publish:
+      - published_port: 8080
+        target_port: 80
+        protocol: tcp
+        mode: host
+      - published_port: 8443
+        target_port: 443
+        protocol: tcp
+        mode: host
+      - published_port: 8443
+        target_port: 443
+        protocol: udp
+        mode: host
+    restart_config:
+      condition: any
+    networks:
+      - dokploy-network
+
+- name: Connect nginx to dokploy-network
   ansible.builtin.command:
-    cmd: /etc/dokploy/install.sh
-  changed_when: true
-  when: dokploy_service_check.rc != 0
+    cmd: docker network connect dokploy-network nginx
+  register: dokploy_docker_connect_result
+  failed_when: dokploy_docker_connect_result.rc != 0 and "is already attached to network" not in dokploy_docker_connect_result.stderr
+  changed_when: dokploy_docker_connect_result.rc == 0

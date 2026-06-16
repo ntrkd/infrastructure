@@ -1,0 +1,7 @@
+dokploy_version: v0.29.8
+# is latest if on the normal branch. else its canary / feature/*
+dokploy_release_tag: latest
+dokploy_postgres_version: 16
+dokploy_traefik_version: v3.6.7
+dokploy_redis_version: 7
+dokploy_reverse_proxy_container_name: nginx

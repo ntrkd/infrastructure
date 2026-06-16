@@ -8,6 +8,10 @@
 # Usage with bash: DOKPLOY_VERSION=canary bash install.sh
 # Usage with bash: DOKPLOY_VERSION=latest bash install.sh
 # Usage with bash: bash install.sh (detects latest stable version)
+
+###
+# JUST REQUIRE A VARIABLE IN ANSIBLE
+###
 detect_version() {
     local version="${DOKPLOY_VERSION}"
     
