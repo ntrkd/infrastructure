@@ -2,6 +2,7 @@ services:
   nginx:
     build: .
     container_name: {{ role_name }}
+    restart: unless-stopped
     networks:
       - nginx_reverse_proxy
     ports:
@@ -18,3 +19,4 @@ services:
 networks:
   nginx_reverse_proxy:
     external: true
+
