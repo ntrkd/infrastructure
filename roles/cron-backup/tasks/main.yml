@@ -35,5 +35,5 @@
     minute: "0"
     hour: "1"
     user: root
-    job: "root {{ ansible_env.HOME }}/backup.sh"
+    job: "{{ ansible_env.HOME }}/backup.sh"
     cron_file: ansible_restic_backup
