@@ -31,8 +31,9 @@ chmod --reference=$vaultwarden_db $VW_DB_BACKUP
 chown --reference=$vaultwarden_db $VW_DB_BACKUP
 chgrp --reference=$vaultwarden_db $VW_DB_BACKUP
 
-echo Initiating backup with restic...
+echo Initiating vaultwarden backup with restic...
 restic --verbose backup \
+    --tag vaultwarden \
 	{{ docker_dir }}/vaultwarden/data/attachments \
 	{{ docker_dir }}/vaultwarden/data/sends \
 	{{ docker_dir }}/vaultwarden/data/log \
