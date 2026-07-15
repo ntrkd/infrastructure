@@ -23,7 +23,7 @@ chmod --reference=$vaultwarden_db $VW_DB_BACKUP
 chown --reference=$vaultwarden_db $VW_DB_BACKUP
 chgrp --reference=$vaultwarden_db $VW_DB_BACKUP
 
-echo Initiating vaultwarden backup with restic...
+echo Initiating vaultwarden backup...
 restic --verbose backup \
     --tag vaultwarden \
 	{{ docker_dir }}/vaultwarden/data/attachments \
@@ -31,6 +31,29 @@ restic --verbose backup \
 	{{ docker_dir }}/vaultwarden/data/log \
 	{{ docker_dir }}/vaultwarden/data/rsa* \
     $VW_DB_BACKUP
+
+echo "Dumping dokploy postgres database..."
+dokploy_postgres_container_id=$(docker ps --filter "name=dokploy-postgres" --filter "status=running" -q | head -n 1 | tr -d '[:space:]')
+
+if [[ -z "$dokploy_postgres_container_id" ]]; then
+    echo "Dokploy postgres container not found. Skipping dokploy postgres backup."
+else
+    echo "Dokploy postgres container ID: ${dokploy_postgres_container_id}"
+    
+    # Dump database inside container
+    docker exec "${dokploy_postgres_container_id}" pg_dump -v -Fc -U dokploy -d dokploy -f /tmp/database.sql
+    
+    # Copy to backup location
+    docker cp "${dokploy_postgres_container_id}:/tmp/database.sql" "/etc/dokploy/postgres_backup.sql"
+    
+    # Cleanup temp file
+    docker exec "${dokploy_postgres_container_id}" rm -f /tmp/database.sql
+fi
+
+echo Initiating dokploy backup...
+restic --verbose backup \
+    --tag dokploy \
+    /etc/dokploy
 
 echo Cleaning up backup dumps...
 rm $VW_DB_BACKUP
