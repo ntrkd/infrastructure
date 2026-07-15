@@ -15,14 +15,59 @@ rm -rf {{ docker_dir }}/vaultwarden/data
 echo Restoring Vaultwarden...
 
 restic restore latest \
-	--include {{ docker_dir }}/vaultwarden/data/attachments \
-	--include {{ docker_dir }}/vaultwarden/data/sends \
-	--include {{ docker_dir }}/vaultwarden/data/log \
-	--include "{{ docker_dir }}/vaultwarden/data/rsa*" \
-    --include $VW_DB_BACKUP \
+    --tag vaultwarden \
     --target /
 
 mv $VW_DB_BACKUP {{ docker_dir }}/vaultwarden/data/db.sqlite3
+
+echo Cleaning Dokploy directory...
+rm -rf /etc/dokploy
+mkdir -p /etc/dokploy
+
+echo Restoring Dokploy...
+
+restic restore latest \
+	--tag dokploy \
+	--target /
+
+# Find the dokploy-postgres container
+echo "Finding dokploy-postgres container..."
+DOKPLOY_POSTGRES_CONTAINER=$(docker ps --filter "name=dokploy-postgres" --filter "status=running" -q | head -n 1)
+
+if [ -z "$DOKPLOY_POSTGRES_CONTAINER" ]; then
+    echo "Error: Dokploy Postgres container not found"
+else
+    DOKPLOY_POSTGRES_CONTAINER_ID=$(echo "$DOKPLOY_POSTGRES_CONTAINER" | tr -d '[:space:]')
+	echo "Found container: $DOKPLOY_POSTGRES_CONTAINER_ID"
+
+	# Drop and recreate database
+	echo "Disconnecting all users from database..."
+	docker exec ${DOKPLOY_POSTGRES_CONTAINER_ID} psql -U dokploy postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'dokploy' AND pid <> pg_backend_pid();"
+
+	echo "Dropping existing database..."
+	docker exec ${DOKPLOY_POSTGRES_CONTAINER_ID} psql -U dokploy postgres -c "DROP DATABASE IF EXISTS dokploy;"
+
+	echo "Creating fresh database..."
+	docker exec ${DOKPLOY_POSTGRES_CONTAINER_ID} psql -U dokploy postgres -c "CREATE DATABASE dokploy;"
+
+	# Copy the backup file into the container
+	echo "Copying backup file into container..."
+	docker cp /etc/dokploy/postgres_backup.sql ${DOKPLOY_POSTGRES_CONTAINER_ID}:/tmp/database.sql
+
+	# Verify file in container
+	echo "Verifying file in container..."
+	docker exec ${DOKPLOY_POSTGRES_CONTAINER_ID} ls -l /tmp/database.sql
+
+	# Restore from the copied file
+	echo "Running database restore..."
+	docker exec ${DOKPLOY_POSTGRES_CONTAINER_ID} pg_restore -v -U dokploy -d dokploy /tmp/database.sql
+
+	# Cleanup the temporary file in the container
+	echo "Cleaning up container temp file..."
+	docker exec ${DOKPLOY_POSTGRES_CONTAINER_ID} rm /tmp/database.sql
+
+	echo "Database restore completed successfully"
+fi
 
 ## Run ansible config with data dirs wiped
 ## Bring down the containers
