@@ -16,14 +16,6 @@ if [[ $? -eq 1 ]]; then
     restic init
 fi
 
-# echo Shutting gitea down...
-# docker stop gitea
-
-# echo Dumping gitea backup...
-# docker exec -w /data --user git gitea gitea dump --file gitea-backup.zip -c /data/gitea/conf/app.ini
-# mkdir -p {{ docker_dir }}/gitea/gitea/backup
-# unzip {{ docker_dir }}/gitea/gitea/gitea-backup.zip -d {{ docker_dir }}/gitea/gitea/backup/
-
 echo Dumping vaultwarden database...
 vaultwarden_db={{ docker_dir }}/vaultwarden/data/db.sqlite3
 sqlite3 $vaultwarden_db ".backup ${VW_DB_BACKUP}"
@@ -39,14 +31,8 @@ restic --verbose backup \
 	{{ docker_dir }}/vaultwarden/data/log \
 	{{ docker_dir }}/vaultwarden/data/rsa* \
     $VW_DB_BACKUP
-	# {{ docker_dir }}/gitea/gitea \
-
-# echo Starting gitea...
-# docker start gitea
 
 echo Cleaning up backup dumps...
-# rm -rf {{ docker_dir }}/gitea/gitea/backup
-# rm {{ docker_dir }}/gitea/gitea/gitea-backup.zip
 rm $VW_DB_BACKUP
 
 echo Running restic forget...
