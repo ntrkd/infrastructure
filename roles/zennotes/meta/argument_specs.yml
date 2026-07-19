@@ -1,0 +1,23 @@
+argument_specs:
+  main:
+    options:
+      docker_dir:
+        type: str
+        required: true
+        description: path to the docker container directory
+      domain:
+        type: str
+        required: true
+        description: the FQDN domain name (example.com)
+      zennotes_auth_token:
+        type: str
+        required: true
+        description: authentication token for the server
+      zennotes_gid:
+        type: int
+        required: true
+        description: group to run contianer as
+      zennotes_uid:
+        type: int
+        required: true
+        description: user to run contianer as

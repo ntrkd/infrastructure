@@ -1,0 +1,26 @@
+services:
+  zennotes:
+    image: adibhanna/zennotes:latest
+    container_name: zennotes
+    user: "0:0"
+    #ports:
+    #  - "7878:7878"
+    networks:
+        - nginx_reverse_proxy
+    environment:
+      ZENNOTES_AUTH_TOKEN: "{{ zennotes_auth_token }}"
+      ZENNOTES_BEHIND_TLS: 1
+    volumes:
+      - ./vault:/workspace
+      - ./data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  nginx_reverse_proxy:
+    external: true

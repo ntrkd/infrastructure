@@ -65,6 +65,15 @@
         name: dokploy
         tasks_from: main
 
+    - name: Deploy zennotes
+      vars:
+        zennotes_auth_token: "{{ sops.zennotes.auth_token }}"
+        zennotes_gid: 0
+        zennotes_uid: 0
+      ansible.builtin.include_role:
+        name: zennotes
+        tasks_from: main
+
     - name: Install backup script
       vars:
         restic_repo_password: "{{ sops.restic.restic_repo_password }}"
