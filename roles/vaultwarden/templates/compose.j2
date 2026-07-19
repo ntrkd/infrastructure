@@ -11,8 +11,8 @@ services:
       LOG_FILE: "/data/vaultwarden.log"
     volumes:
       - ./data/:/data/
-    ports:
-      - 127.0.0.1:8000:80
+    #ports:
+    #  - 127.0.0.1:8000:80
     networks:
       - nginx_reverse_proxy
 
