@@ -55,6 +55,12 @@ restic --verbose backup \
     --tag dokploy \
     /etc/dokploy
 
+echo Initiating ZenNotes backup...
+restic --verbose backup \
+    --tag zennotes \
+	{{ docker_dir }}/zennotes/data \
+	{{ docker_dir }}/zennotes/vault
+
 echo Cleaning up backup dumps...
 rm $VW_DB_BACKUP
 

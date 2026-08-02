@@ -73,3 +73,12 @@ fi
 ## Bring down the containers
 ## Run restore script
 ## Bring containers up
+
+echo Cleaning Dokploy directory...
+rm -rf /etc/docker/zennotes/data /etc/docker/zennotes/vault
+
+echo Restoring ZenNotes...
+
+restic restore latest \
+	--tag zennotes \
+	--target /
